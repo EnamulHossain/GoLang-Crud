@@ -16,7 +16,7 @@ func pareseStudentListTemplate(w http.ResponseWriter, data any) {
 
 func (c connection) ListStudent(w http.ResponseWriter, r *http.Request) {
 	var student []Student
-	if err := c.db.Select(&student, "SELECT * FROM students"); err != nil {
+	if err := c.db.Select(&student, "SELECT * FROM students WHERE deleted_at IS NULL ORDER BY id ASC"); err != nil {
 		log.Fatal(err)
 	}
 	pareseStudentListTemplate(w, student)

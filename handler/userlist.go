@@ -16,7 +16,7 @@ func pareseUserTemplate(w http.ResponseWriter, data any) {
 
 func (c connection) UserList(w http.ResponseWriter, r *http.Request) {
 	var user []User
-	if err := c.db.Select(&user, "SELECT * FROM users"); err != nil {
+	if err := c.db.Select(&user, "SELECT * FROM users WHERE deleted_at IS NULL ORDER BY id ASC"); err != nil {
 		log.Fatal(err)
 	}
 	pareseUserTemplate(w, user)

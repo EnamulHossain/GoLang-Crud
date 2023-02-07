@@ -2,7 +2,6 @@ package handler
 
 import (
 	"database/sql"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -18,6 +17,7 @@ type User struct {
 	Name      string       `db:"name" form:"name"`
 	Email     string       `db:"email" form:"email"`
 	Password  string       `db:"password" form:"password"`
+	Status    bool         `db:"status" form:"status"`
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
@@ -72,14 +72,14 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := users.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			fmt.Println(vErr)
+			// fmt.Println(vErr)
 			users.FormError = vErr
 		}
 		pareseRegTemplate(w, users)
 		return
 	}
 
-	log.Println(r.PostForm, users)
+	// log.Println(r.PostForm, users)
 
 	createUserQuery := `
 	INSERT INTO users(

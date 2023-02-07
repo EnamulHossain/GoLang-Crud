@@ -24,6 +24,7 @@ var migration = `
 		name VARCHAR(255) NOT NULL,
 		email VARCHAR(255) UNIQUE NOT NULL,
 		password VARCHAR(255) NOT NULL,
+		status BOOLEAN DEFAULT TRUE,
 		created_at TIMESTAMP DEFAULT NOW(),
 		updated_at TIMESTAMP DEFAULT NOW(),
 		deleted_at TIMESTAMP DEFAULT NULL
@@ -66,7 +67,6 @@ var migration = `
 	CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions (expiry);
 `
 
-
 func main() {
 
 	// Start Enviroment
@@ -96,7 +96,6 @@ func main() {
 
 	decoder := form.NewDecoder()
 
-
 	// Start Database Connection
 	// db, err := sqlx.Connect("postgres", "user=postgres password=secret dbname=studentmanagement sslmode=disable")
 	// if err != nil {
@@ -114,6 +113,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	// sessionManager.Store = NewSQLXStore(db)
 
 	res := db.MustExec(migration)
 	row, err := res.RowsAffected()
@@ -125,12 +125,10 @@ func main() {
 		log.Fatalln("failed to run schema")
 	}
 	// End Database Connection
-	
 
 	// db.MustExec(migration)
 
 	p := config.GetInt("server.port")
-
 
 	_, chi := handler.New(db, sessionManager, decoder)
 

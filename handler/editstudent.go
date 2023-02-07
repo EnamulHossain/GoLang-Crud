@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/justinas/nosurf"
 	// "github.com/go-chi/chi/v5"
 )
@@ -23,7 +24,7 @@ func (c connection) StudentEdit(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var StudentEdit Student
 
-	const editStudentQuery = `Select * FROM students WHERE id = $1`
+	const editStudentQuery = `Select * FROM students WHERE id = $1 AND deleted_at IS NULL`
 	if err := c.db.Get(&StudentEdit, editStudentQuery, id); err != nil {
 		log.Fatalln(err)
 	}
@@ -48,6 +49,14 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 	student := Student{ID: uID}
 	if err := h.formDecoder.Decode(&student, r.PostForm); err != nil {
 		log.Fatal(err)
+	}
+
+	if err := student.ValidateStudent(); err != nil {
+		if vErr, ok := err.(validation.Errors); ok {
+			student.FormError = vErr
+		}
+		pareseStudentTemplate(w, student)
+		return
 	}
 
 	const UpdateQQ = `
