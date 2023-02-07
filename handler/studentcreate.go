@@ -20,7 +20,7 @@ type Student struct {
 	Password  string    `db:"password" form:"password"`
 	CreatedAt time.Time `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" form:"updated_at"`
-	CSRFToken string    `form:"csrf_token"`
+	CSRFToken string    `db:"-" form:"csrf_token"`
 	FormError map[string]error
 }
 
@@ -59,12 +59,11 @@ func (c connection) CreateStudent(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (c connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
+func (c *connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
 
 	if err := r.ParseForm(); err != nil {
 		log.Fatal(err)
 	}
-	// decoder := form.NewDecoder()
 
 	students := Student{}
 

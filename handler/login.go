@@ -4,17 +4,17 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"golang.org/x/crypto/bcrypt"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
-
+	"github.com/justinas/nosurf"
+	// "golang.org/x/crypto/bcrypt"
+	// validation "github.com/go-ozzo/ozzo-validation/v4"
+	// "github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-// type login struct{
-// 	username string
-// 	password string
-// }
+//	type login struct{
+//		username string
+//		password string
+//	}
 func pareseLoginTemplate(w http.ResponseWriter, data any) {
 	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/login.html")
 	if err != nil {
@@ -23,11 +23,13 @@ func pareseLoginTemplate(w http.ResponseWriter, data any) {
 	t.ExecuteTemplate(w, "login.html", data)
 }
 
-func (h connection) Login(w http.ResponseWriter, r *http.Request) {
-	pareseLoginTemplate(w, r)
+func (c connection) Login(w http.ResponseWriter, r *http.Request) {
+	pareseLoginTemplate(w, User{
+		CSRFToken: nosurf.Token(r),
+	})
 }
 
-func (c connection) LoginUser(w http.ResponseWriter, r *http.Request) {
+func (c *connection) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := r.ParseForm(); err != nil {
 		log.Fatal(err)
@@ -41,102 +43,98 @@ func (c connection) LoginUser(w http.ResponseWriter, r *http.Request) {
 	// 	password: Password,
 	// }
 
-
-	// compareLogin:= 
+	// compareLogin:=
 
 	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
 
 }
 
+// // package handler
 
+// import (
+// 	"html/template"
+// 	"log"
+// 	"net/http"
 
+// 	validation "github.com/go-ozzo/ozzo-validation/v4"
+// 	"github.com/go-ozzo/ozzo-validation/v4/is"
+// 	"github.com/gorilla/csrf"
+// )
 
-// package handler
+// type Login struct {
+// 	Email    string
+// 	Password string
+// }
 
-import (
-	"html/template"
-	"log"
-	"net/http"
+// type LoginTempData struct {
+// 	CSRFField  template.HTML
+// 	Form       Login
+// 	FormErrors map[string]string
+// }
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
-	"github.com/gorilla/csrf"
-)
+// func (l Login) Validate() error {
+// 	return validation.ValidateStruct(&l,
+// 		validation.Field(&l.Email, validation.Required, is.Email),
+// 		validation.Field(&l.Password, validation.Required, validation.Length(6, 12)),
+// 	)
+// }
 
-type Login struct {
-	Email    string
-	Password string
-}
+// func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("Method: getLogin")
+// 	formData := LoginTempData{
+// 		CSRFField: csrf.TemplateField(r),
+// 	}
+// 	s.loadLoginTemplate(w, r, formData)
+// }
 
-type LoginTempData struct {
-	CSRFField  template.HTML
-	Form       Login
-	FormErrors map[string]string
-}
+// func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
+// 	log.Println("Method: postLogin")
 
-func (l Login) ValidateL() error {
-	return validation.ValidateStruct(&l,
-		validation.Field(&l.Email, validation.Required, is.Email),
-		validation.Field(&l.Password, validation.Required, validation.Length(6, 12)),
-	)
-}
+// 	if err := r.ParseForm(); err != nil {
+// 		log.Fatalln("parsing error")
+// 	}
 
-func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
-	log.Println("Method: getLogin")
-	formData := LoginTempData{
-		CSRFField: csrf.TemplateField(r),
-	}
-	s.loadLoginTemplate(w, r, formData)
-}
+// 	var form Login
+// 	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
+// 		log.Fatalln("decoding error")
+// 	}
 
-func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
-	log.Println("Method: postLogin")
+// 	if err := form.ValidateL(); err != nil {
+// 		vErrs := map[string]string{}
+// 		if e, ok := err.(validation.Errors); ok {
+// 			if len(e) > 0 {
+// 				for key, value := range e {
+// 					vErrs[key] = value.Error()
+// 				}
+// 			}
+// 		}
 
-	if err := r.ParseForm(); err != nil {
-		log.Fatalln("parsing error")
-	}
+// 		data := LoginTempData{
+// 			CSRFField:  csrf.TemplateField(r),
+// 			Form:       form,
+// 			FormErrors: vErrs,
+// 		}
+// 		s.loadLoginTemplate(w, r, data)
+// 		return
+// 	}
 
-	var form Login
-	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
-		log.Fatalln("decoding error")
-	}
+// 	hash, _ := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.DefaultCost)
+// 	if err:= bcrypt.CompareHashAndPassword(hash, []byte("123456")); err != nil{
+// 		log.Fatalf("Password does not match ")
+// 	}
 
-	if err := form.ValidateL(); err != nil {
-		vErrs := map[string]string{}
-		if e, ok := err.(validation.Errors); ok {
-			if len(e) > 0 {
-				for key, value := range e {
-					vErrs[key] = value.Error()
-				}
-			}
-		}
+// 	session, _ := s.session.Get(r, "practice_session")
+// 	session.Values["user_id"] = "1"
+// 	if err := session.Save(r, w); err != nil {
+// 		log.Fatalln("error while saving user id into session")
+// 	}
+// 	http.Redirect(w, r, "/student/create", http.StatusTemporaryRedirect)
+// }
 
-		data := LoginTempData{
-			CSRFField:  csrf.TemplateField(r),
-			Form:       form,
-			FormErrors: vErrs,
-		}
-		s.loadLoginTemplate(w, r, data)
-		return
-	}
-
-	hash, _ := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.DefaultCost)
-	if err:= bcrypt.CompareHashAndPassword(hash, []byte("123456")); err != nil{
-		log.Fatalf("Password does not match ")
-	}
-
-	session, _ := s.session.Get(r, "practice_session")
-	session.Values["user_id"] = "1"
-	if err := session.Save(r, w); err != nil {
-		log.Fatalln("error while saving user id into session")
-	}
-	http.Redirect(w, r, "/books/create", http.StatusTemporaryRedirect)
-}
-
-func (s *Server) loadLoginTemplate(w http.ResponseWriter, r *http.Request, form LoginTempData) {
-	tmp := s.templates.Lookup("login.html")
-	if err := tmp.Execute(w, form); err != nil {
-		log.Println("Error executing template :", err)
-		return
-	}
-}
+// func (s *Server) loadLoginTemplate(w http.ResponseWriter, r *http.Request, form LoginTempData) {
+// 	tmp := s.templates.Lookup("login.html")
+// 	if err := tmp.Execute(w, form); err != nil {
+// 		log.Println("Error executing template :", err)
+// 		return
+// 	}
+// }

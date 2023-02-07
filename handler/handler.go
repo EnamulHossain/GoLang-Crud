@@ -31,6 +31,13 @@ func New(db *sqlx.DB, sm *scs.SessionManager, formDecoder *form.Decoder) (connec
 	r.Get("/login", c.Login)
 	r.Get("/reg", c.Reg)
 
+	r.Get("/create/student", c.CreateStudent)
+	r.Post("/student/store", c.StoreStudent)
+	r.Get("/list/student", c.ListStudent)
+	r.Get("/student/delete/{{.ID}}", c.DeleteStudent)
+	r.Get("/student/{id:[0-9]+}/edit", c.StudentEdit)
+	r.Post("/student/{id:[0-9]+}/update", c.StudentUpdate)
+
 	r.Route("/user", func(r chi.Router) {
 
 		r.Post("/store", c.StoreUser)
@@ -40,13 +47,6 @@ func New(db *sqlx.DB, sm *scs.SessionManager, formDecoder *form.Decoder) (connec
 		r.Post("/{id:[0-9]+}/update", c.UpdateUser)
 
 	})
-
-	r.Get("/create/student", c.CreateStudent)
-	r.Post("/store/student", c.StoreStudent)
-	r.Get("/list/student", c.ListStudent)
-	r.Get("/student/delete/{{.ID}}", c.DeleteStudent)
-	r.Get("/student/{id:[0-9]+}/edit", c.StudentEdit)
-	r.Post("/student/{id:[0-9]+}/update", c.StudentUpdate)
 
 	r.Post("/user/login", c.LoginUser)
 
