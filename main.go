@@ -18,6 +18,55 @@ import (
 
 var sessionManager *scs.SessionManager
 
+var migration = `
+    CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		name VARCHAR(255) NOT NULL,
+		email VARCHAR(255) UNIQUE NOT NULL,
+		password VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP DEFAULT NOW(),
+		updated_at TIMESTAMP DEFAULT NOW(),
+		deleted_at TIMESTAMP DEFAULT NULL
+	);
+
+
+	CREATE TABLE IF NOT EXISTS students (
+		id SERIAL PRIMARY KEY,
+		first_name VARCHAR(255) NOT NULL,
+		last_name VARCHAR(255) NOT NULL,
+		class VARCHAR(255) NOT NULL,
+		roll INT NOT NULL,
+		email VARCHAR(255) UNIQUE NOT NULL,
+		password VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		deleted_at TIMESTAMP DEFAULT NULL
+
+	  );
+	
+	CREATE TABLE IF NOT EXISTS marks (
+		id SERIAL PRIMARY KEY,
+		student_id INT REFERENCES students(id) ON DELETE CASCADE,
+		datastructures INT NOT NULL,
+		algorithms INT NOT NULL,
+		computernetworks INT NOT NULL,
+		artificialintelligence INT NOT NULL,
+		operatingsystems INT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		deleted_at TIMESTAMP DEFAULT NULL
+	  );
+	  
+	CREATE TABLE IF NOT EXISTS sessions (
+		token TEXT PRIMARY KEY,
+		data BYTEA NOT NULL,
+		expiry TIMESTAMPTZ NOT NULL
+		);	
+
+	CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions (expiry);
+`
+
+
 func main() {
 
 	// Start Enviroment
@@ -45,56 +94,43 @@ func main() {
 	sessionManager.Cookie.Secure = true
 	// End Sesson
 
+	decoder := form.NewDecoder()
+
+
 	// Start Database Connection
-	db, err := sqlx.Connect("postgres", "user=postgres password=secret dbname=studentmanagement sslmode=disable")
+	// db, err := sqlx.Connect("postgres", "user=postgres password=secret dbname=studentmanagement sslmode=disable")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		config.GetString("database.host"),
+		config.GetString("database.port"),
+		config.GetString("database.user"),
+		config.GetString("database.password"),
+		config.GetString("database.dbname"),
+		config.GetString("database.sslmode"),
+	))
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	res := db.MustExec(migration)
+	row, err := res.RowsAffected()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if row < 0 {
+		log.Fatalln("failed to run schema")
+	}
 	// End Database Connection
-	userMigration := `
-    CREATE TABLE IF NOT EXISTS users (
-		id SERIAL PRIMARY KEY,
-		name VARCHAR(255) NOT NULL,
-		email VARCHAR(255) UNIQUE NOT NULL,
-		password VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP DEFAULT NOW(),
-		updated_at TIMESTAMP DEFAULT NOW()
-	);`
+	
 
-	studentMigration := `
-	CREATE TABLE IF NOT EXISTS students (
-		id SERIAL PRIMARY KEY,
-		first_name VARCHAR(255) NOT NULL,
-		last_name VARCHAR(255) NOT NULL,
-		class VARCHAR(255) NOT NULL,
-		roll INT NOT NULL,
-		email VARCHAR(255) UNIQUE NOT NULL,
-		password VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	  );
-	  `
-
-	markMigration := `
-	CREATE TABLE IF NOT EXISTS marks (
-		id SERIAL PRIMARY KEY,
-		student_id INT REFERENCES students(id) ON DELETE CASCADE,
-		datastructures INT NOT NULL,
-		algorithms INT NOT NULL,
-		computernetworks INT NOT NULL,
-		artificialintelligence INT NOT NULL,
-		operatingsystems INT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	  );`
-
-	db.MustExec(userMigration)
-	db.MustExec(studentMigration)
-	db.MustExec(markMigration)
+	// db.MustExec(migration)
 
 	p := config.GetInt("server.port")
 
-	decoder := form.NewDecoder()
 
 	_, chi := handler.New(db, sessionManager, decoder)
 

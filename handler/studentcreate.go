@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
@@ -20,6 +21,7 @@ type Student struct {
 	Password  string    `db:"password" form:"password"`
 	CreatedAt time.Time `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time `db:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
 	CSRFToken string    `db:"-" form:"csrf_token"`
 	FormError map[string]error
 }

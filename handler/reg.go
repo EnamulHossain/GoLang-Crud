@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"log"
@@ -13,13 +14,14 @@ import (
 )
 
 type User struct {
-	ID        int       `db:"id" form:"-"`
-	Name      string    `db:"name" form:"name"`
-	Email     string    `db:"email" form:"email"`
-	Password  string    `db:"password" form:"password"`
-	CreatedAt time.Time `db:"created_at" form:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" form:"updated_at"`
-	CSRFToken string    `db:"-" form:"csrf_token"`
+	ID        int          `db:"id" form:"-"`
+	Name      string       `db:"name" form:"name"`
+	Email     string       `db:"email" form:"email"`
+	Password  string       `db:"password" form:"password"`
+	CreatedAt time.Time    `db:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
+	CSRFToken string       `db:"-" form:"csrf_token"`
 	FormError map[string]error
 }
 
