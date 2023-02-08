@@ -2,6 +2,7 @@ package handler
 
 import (
 	"StudentManagement/storage"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -57,9 +58,9 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// newuser, err := c.storage.CreateUser(user)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-	http.Redirect(w, r, ("/user/list"), http.StatusSeeOther)
+	newuser, err := c.storage.CreateUser(user)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	http.Redirect(w, r, fmt.Sprintln("/user/list",newuser), http.StatusSeeOther)
 }

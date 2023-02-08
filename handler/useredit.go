@@ -3,6 +3,7 @@ package handler
 import (
 	// "fmt"
 	"StudentManagement/storage"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -25,7 +26,10 @@ func pareseEditUserTemplate(w http.ResponseWriter, data any) {
 func (c connection) EditUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	UserEdit,_:= c.storage.GetUserByID(id)
+	UserEdit,err:= c.storage.GetUserByID(id)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
 	
 	var form UserForm
 	form.User = *UserEdit
@@ -61,6 +65,13 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
+
+	updateUser, err := c.storage.UpdateUser(user)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
+
+	http.Redirect(w, r, fmt.Sprintln("/user/list",updateUser.ID), http.StatusSeeOther)
 
 }
