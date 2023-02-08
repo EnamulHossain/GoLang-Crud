@@ -1,24 +1,33 @@
 package handler
 
 import (
+	"StudentManagement/storage"
+
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-playground/form"
-	"github.com/jmoiron/sqlx"
 )
 
 type connection struct {
-	db             *sqlx.DB
+	storage        dbStorage
 	sessionManager *scs.SessionManager
 	formDecoder    *form.Decoder
 }
+type dbStorage interface {
+	ListUser() ([]storage.User, error)
+	CreateUser(u storage.User) (*storage.User, error)
+	UpdateUser(u storage.User) (*storage.User, error)
+	GetUserByID(id string) (*storage.User, error)
+	GetUserByUsername(username string) (*storage.User, error)
+	DeleteUserByID(id string) error
+}
 
-func New(db *sqlx.DB, sm *scs.SessionManager, formDecoder *form.Decoder) (connection, *chi.Mux) {
+func New(storage dbStorage, sm *scs.SessionManager, formDecoder *form.Decoder) (connection, *chi.Mux) {
 	c := connection{
-		db:             db,
 		sessionManager: sm,
 		formDecoder:    formDecoder,
+		storage:        storage ,
 	}
 
 	r := chi.NewRouter()

@@ -2,6 +2,7 @@ package handler
 
 import (
 	// "fmt"
+	"StudentManagement/storage"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,9 +11,7 @@ import (
 	"github.com/go-chi/chi"
 	validation "github.com/go-ozzo/ozzo-validation"
 
-	// validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/justinas/nosurf"
-	// "github.com/go-chi/chi/v5"
 )
 
 func pareseEditUserTemplate(w http.ResponseWriter, data any) {
@@ -25,15 +24,13 @@ func pareseEditUserTemplate(w http.ResponseWriter, data any) {
 
 func (c connection) EditUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	var UserEdit User
 
-	const editUserQuery = `Select * FROM users WHERE id = $1 AND deleted_at IS NULL`
-	if err := c.db.Get(&UserEdit, editUserQuery, id); err != nil {
-		log.Fatalln(err)
-	}
-
-	UserEdit.CSRFToken = nosurf.Token(r)
-	pareseEditUserTemplate(w, UserEdit)
+	UserEdit,_:= c.storage.GetUserByID(id)
+	
+	var form UserForm
+	form.User = *UserEdit
+	form.CSRFToken = nosurf.Token(r)
+	pareseEditUserTemplate(w, form)
 
 }
 
@@ -48,49 +45,22 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("%#V", err)
 	}
 
-	user := User{ID: uID}
+	var form UserForm
+	user := storage.User{ID: uID}
 	if err := c.formDecoder.Decode(&user, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
 
+	form.User = user
 	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
 			// fmt.Println(vErr)
-			user.FormError = vErr
+			form.FormError = vErr
 		}
-		pareseRegTemplate(w, user)
+		pareseRegTemplate(w, form)
 		return
 	}
 
-	// if err := user.Validate(); err != nil {
-	// 	if vErr, ok := err.(validation.Errors); ok {
-	// 		fmt.Println(vErr)
-	// 		user.FormError = vErr
-	// 	}
-	// 	pareseEditUserTemplate(w, user)
-	// 	return
-	// }
-
-	const UpdateQQ = `
-	UPDATE Users SET
-	    name =:name,
-		email = :email,
-		password = :password
-		WHERE id= :id;
-	`
-
-	stmt, err := c.db.PrepareNamed(UpdateQQ)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	res, err := stmt.Exec(user)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	Rcount, err := res.RowsAffected()
-	if Rcount < 1 || err != nil {
-		log.Fatalln(err)
-	}
 	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
 
 }

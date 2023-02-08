@@ -1,46 +1,23 @@
 package handler
 
 import (
-	"database/sql"
+	"StudentManagement/storage"
 	"html/template"
 	"log"
 	"net/http"
-	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	// "github.com/go-playground/form"
 	"github.com/justinas/nosurf"
 )
 
-type User struct {
-	ID        int          `db:"id" form:"-"`
-	Name      string       `db:"name" form:"name"`
-	Email     string       `db:"email" form:"email"`
-	Password  string       `db:"password" form:"password"`
-	Status    bool         `db:"status" form:"status"`
-	CreatedAt time.Time    `db:"created_at" form:"created_at"`
-	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
-	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
-	CSRFToken string       `db:"-" form:"csrf_token"`
+//	type UserList struct {
+//		Users []User `db:"users"`
+//	}
+type UserForm struct {
+	User       storage.User
 	FormError map[string]error
+	CSRFToken  string
 }
-
-func (u User) Validate() error {
-	vre := validation.Required.Error
-	len := validation.Length(2, 20).Error
-	return validation.ValidateStruct(&u,
-		validation.Field(&u.Name,
-			vre("The name  is required"),
-			len("The name field must be between 2 to 20 characters."),
-		),
-		validation.Field(&u.Email, vre("The Email  is required")),
-		validation.Field(&u.Password, vre("The Password  is required")),
-	)
-}
-
-// type UserList struct {
-// 	Users []User `db:"users"`
-// }
 
 func pareseRegTemplate(w http.ResponseWriter, data any) {
 	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/reg.html")
@@ -53,7 +30,7 @@ func pareseRegTemplate(w http.ResponseWriter, data any) {
 }
 
 func (c connection) Reg(w http.ResponseWriter, r *http.Request) {
-	pareseRegTemplate(w, User{
+	pareseRegTemplate(w, UserForm{
 		CSRFToken: nosurf.Token(r),
 	})
 }
@@ -63,39 +40,26 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		log.Fatal(err)
 	}
+	form := UserForm{}
+	user := storage.User{}
 
-	users := User{}
-
-	if err := c.formDecoder.Decode(&users, r.PostForm); err != nil {
+	if err := c.formDecoder.Decode(&user, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
 
-	if err := users.Validate(); err != nil {
+	form.User = user
+	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
 			// fmt.Println(vErr)
-			users.FormError = vErr
+			form.FormError = vErr
 		}
-		pareseRegTemplate(w, users)
+		pareseRegTemplate(w, form)
 		return
 	}
 
-	// log.Println(r.PostForm, users)
-
-	createUserQuery := `
-	INSERT INTO users(
-		name,
-		email,
-		password
-		)  VALUES(
-			:name,
-		:email,
-		:password
-		)
-		returning *`
-
-	stmt, _ := c.db.PrepareNamed(createUserQuery)
-
-	stmt.Get(&users, users)
-
-	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
+	// newuser, err := c.storage.CreateUser(user)
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+	http.Redirect(w, r, ("/user/list"), http.StatusSeeOther)
 }

@@ -24,7 +24,7 @@ func pareseLoginTemplate(w http.ResponseWriter, data any) {
 }
 
 func (c connection) Login(w http.ResponseWriter, r *http.Request) {
-	pareseLoginTemplate(w, User{
+	pareseLoginTemplate(w, UserForm{
 		CSRFToken: nosurf.Token(r),
 	})
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"StudentManagement/handler"
+	"StudentManagement/storage/postgres"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form"
-	"github.com/jmoiron/sqlx"
 	"github.com/justinas/nosurf"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
@@ -83,6 +83,23 @@ func main() {
 	}
 	// End Enviroment
 
+	decoder := form.NewDecoder()
+
+	postgresStorage, err := postgres.NewPostgresStorage(config)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	res := postgresStorage.DB.MustExec(migration)
+	row, err := res.RowsAffected()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if row < 0 {
+		log.Fatalln("failed to run migration")
+	}
+	// End Database Connection
 	// Start  Sesson
 	lt := config.GetDuration("session.lifetime")
 	it := config.GetDuration("session.idletime")
@@ -92,45 +109,13 @@ func main() {
 	sessionManager.Cookie.Name = "web-session"
 	sessionManager.Cookie.HttpOnly = true
 	sessionManager.Cookie.Secure = true
+	sessionManager.Store = NewSQLXStore(postgresStorage.DB)
+
 	// End Sesson
-
-	decoder := form.NewDecoder()
-
-	// Start Database Connection
-	// db, err := sqlx.Connect("postgres", "user=postgres password=secret dbname=studentmanagement sslmode=disable")
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-
-	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		config.GetString("database.host"),
-		config.GetString("database.port"),
-		config.GetString("database.user"),
-		config.GetString("database.password"),
-		config.GetString("database.dbname"),
-		config.GetString("database.sslmode"),
-	))
-	if err != nil {
-		log.Fatalln(err)
-	}
-	// sessionManager.Store = NewSQLXStore(db)
-
-	res := db.MustExec(migration)
-	row, err := res.RowsAffected()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	if row < 0 {
-		log.Fatalln("failed to run schema")
-	}
-	// End Database Connection
-
-	// db.MustExec(migration)
 
 	p := config.GetInt("server.port")
 
-	_, chi := handler.New(db, sessionManager, decoder)
+	_, chi := handler.New(postgresStorage, sessionManager, decoder)
 
 	newChi := nosurf.New(chi)
 
