@@ -4,6 +4,8 @@ import (
 	"StudentManagement/storage"
 	"fmt"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const listQuery = `SELECT * FROM users WHERE deleted_at IS NULL ORDER BY id ASC`
@@ -34,6 +36,14 @@ func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 
 	var user storage.User
 	stmt, _ := s.DB.PrepareNamed(createUserQuery)
+// HAsh
+	HassPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	u.Password = string(HassPass)
+
+//ENd HAsh
 
 	if err := stmt.Get(&user, u); err != nil {
 		log.Fatal(err)

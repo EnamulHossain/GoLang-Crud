@@ -106,21 +106,21 @@ func (s PostgresStorage) GetStudentByUsername(username string) (*storage.Student
 const deleteStudentByIdQuery = `UPDATE students SET deleted_at = CURRENT_TIMESTAMP WHERE id=$1 AND deleted_at IS NULL`
 
 func (s PostgresStorage) DeleteStudentByID(id string) error {
-	_, err := s.DB.Exec(deleteStudentByIdQuery, id)
+	res, err := s.DB.Exec(deleteStudentByIdQuery, id)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	// rowCount, err := res.RowsAffected()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return err
-	// }
+	rowCount, err := res.RowsAffected()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 
-	// if rowCount <= 0 {
-	// 	return fmt.Errorf("unable to delete student")
-	// }
+	if rowCount <= 0 {
+		return fmt.Errorf("unable to delete student")
+	}
 
 	return nil
 }

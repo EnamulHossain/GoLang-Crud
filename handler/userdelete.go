@@ -13,7 +13,7 @@ func (c *connection) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 
 	if err := c.storage.DeleteUserByID(id); err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
