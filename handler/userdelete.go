@@ -1,17 +1,16 @@
 package handler
 
 import (
-	"log"
 	"net/http"
+	"strings"
 
-	"github.com/go-chi/chi"
 )
 
 func (c *connection) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	log.Println("##############")
-	id := chi.URLParam(r, "id")
+	
+	Url := r.URL.Path
+	id := strings.ReplaceAll(Url, "/user/delete/", "")
 
-	log.Println("id====",id)
 
 	if err := c.storage.DeleteUserByID(id); err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)

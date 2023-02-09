@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -40,11 +39,13 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	// if err := r.ParseForm(); err != nil {
-	// 	log.Fatalln("%#V", err)
-	// }
-	// //............................................................
+	if err := r.ParseForm(); err != nil {
+		log.Fatalln("%#V", err)
+	}
+
 	var form UserForm
+
+
 	
 	student := storage.Student{ID: uID}
 	if err := h.formDecoder.Decode(&student, r.PostForm); err != nil {
@@ -60,12 +61,12 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	
-	UpdateStudent,err := h.storage.UpdateStudent(student)
-	if err != nil {
+	_, eRr := h.storage.UpdateStudent(student)
+	if eRr != nil {
 		log.Println(err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 
-	// http.Redirect(w, r, ("/list/student"), http.StatusSeeOther)
-	http.Redirect(w, r, fmt.Sprintln("/list/student",UpdateStudent), http.StatusSeeOther)
+	http.Redirect(w, r, ("/list/student"), http.StatusSeeOther)
+
 }

@@ -52,22 +52,22 @@ func (s PostgresStorage) CreateStudent(u storage.Student) (*storage.Student, err
 
 
 const UpdateStudentQ = `
-	UPDATE Students SET
+	UPDATE students SET
 	    first_name =:first_name,
 		last_name =:last_name,
 		class = :class,
 		roll = :roll,
 		email = :email,
 		password = :password
-		WHERE id= :id AND deleted_at IS NULL RETURING *;
+		WHERE id= :id AND deleted_at IS NULL RETURNING *;
 	`
 
 func (s PostgresStorage) UpdateStudent(u storage.Student) (*storage.Student, error) {
-	stmt, err := s.DB.PrepareNamed(createStudentQuery)
+	stmt, err := s.DB.PrepareNamed(UpdateStudentQ)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if err := stmt.Get(&u,u); err != nil {
+	if err := stmt.Get(&u, u); err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
@@ -106,21 +106,21 @@ func (s PostgresStorage) GetStudentByUsername(username string) (*storage.Student
 const deleteStudentByIdQuery = `UPDATE students SET deleted_at = CURRENT_TIMESTAMP WHERE id=$1 AND deleted_at IS NULL`
 
 func (s PostgresStorage) DeleteStudentByID(id string) error {
-	res, err := s.DB.Exec(deleteStudentByIdQuery, id)
+	_, err := s.DB.Exec(deleteStudentByIdQuery, id)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
 
-	rowCount, err := res.RowsAffected()
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+	// rowCount, err := res.RowsAffected()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
 
-	if rowCount <= 0 {
-		return fmt.Errorf("unable to delete student")
-	}
+	// if rowCount <= 0 {
+	// 	return fmt.Errorf("unable to delete student")
+	// }
 
 	return nil
 }

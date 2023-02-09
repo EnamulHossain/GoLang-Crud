@@ -1,9 +1,7 @@
 package handler
 
 import (
-	// "fmt"
 	"StudentManagement/storage"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -44,10 +42,11 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+// ...........
 	if err := r.ParseForm(); err != nil {
 		log.Fatalln("%#V", err)
 	}
+// ...........
 
 	var form UserForm
 	user := storage.User{ID: uID}
@@ -58,7 +57,6 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	form.User = user
 	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			// fmt.Println(vErr)
 			form.FormError = vErr
 		}
 		pareseRegTemplate(w, form)
@@ -66,12 +64,9 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-	updateUser, err := c.storage.UpdateUser(user)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
-	}
+	c.storage.UpdateUser(user)
+	
 
-	http.Redirect(w, r, fmt.Sprintln("/user/list",updateUser.ID), http.StatusSeeOther)
+	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
 
 }
