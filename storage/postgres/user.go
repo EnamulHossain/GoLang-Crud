@@ -39,7 +39,7 @@ func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 		log.Fatal(err)
 		return nil, err
 	}
-	if u.ID == 0 {
+	if user.ID == 0 {
 		log.Println("Unable to insert user into db")
 	}
 	return &user, nil
@@ -55,8 +55,10 @@ UPDATE Users SET
 
 func (s PostgresStorage) UpdateUser(u storage.User) (*storage.User, error) {
 
-	stmt, _ := s.DB.PrepareNamed(UpdateQQ)
-
+	stmt, err := s.DB.PrepareNamed(UpdateQQ)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	if err := stmt.Get(&u, u); err != nil {
 		log.Fatal(err)
 		return nil, err

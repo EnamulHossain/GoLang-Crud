@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -15,9 +14,10 @@ import (
 //		Users []User `db:"users"`
 //	}
 type UserForm struct {
-	User       storage.User
+	User      storage.User
+	Student   storage.Student
 	FormError map[string]error
-	CSRFToken  string
+	CSRFToken string
 }
 
 func pareseRegTemplate(w http.ResponseWriter, data any) {
@@ -49,6 +49,7 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form.User = user
+	
 	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
 			// fmt.Println(vErr)
@@ -58,9 +59,9 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newuser, err := c.storage.CreateUser(user)
+	_, err := c.storage.CreateUser(user)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	http.Redirect(w, r, fmt.Sprintln("/user/list",newuser), http.StatusSeeOther)
+	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
 }

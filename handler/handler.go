@@ -21,6 +21,14 @@ type dbStorage interface {
 	GetUserByID(id string) (*storage.User, error)
 	GetUserByUsername(username string) (*storage.User, error)
 	DeleteUserByID(id string) error
+
+
+	CreateStudent(u storage.Student) (*storage.Student, error)
+	ListStudent() ([]storage.Student, error)
+	UpdateStudent(u storage.Student) (*storage.Student, error)
+	GetStudentByID(id string) (*storage.Student, error)
+	GetStudentByUsername(username string) (*storage.Student, error)
+	DeleteStudentByID(id string) error
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, formDecoder *form.Decoder) (connection, *chi.Mux) {

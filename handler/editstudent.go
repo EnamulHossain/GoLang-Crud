@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"StudentManagement/storage"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -22,15 +24,11 @@ func pareseEditStudentTemplate(w http.ResponseWriter, data any) {
 
 func (c connection) StudentEdit(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	var StudentEdit Student
-
-	const editStudentQuery = `Select * FROM students WHERE id = $1 AND deleted_at IS NULL`
-	if err := c.db.Get(&StudentEdit, editStudentQuery, id); err != nil {
-		log.Fatalln(err)
-	}
-
-	StudentEdit.CSRFToken = nosurf.Token(r)
-	pareseEditStudentTemplate(w, StudentEdit)
+	editStudent,_:= c.storage.GetStudentByID(id)
+	var form UserForm
+	form.Student = *editStudent
+	form.CSRFToken = nosurf.Token(r)
+	pareseEditStudentTemplate(w, form)
 
 }
 
@@ -42,47 +40,32 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	if err := r.ParseForm(); err != nil {
-		log.Fatalln("%#V", err)
-	}
+	// if err := r.ParseForm(); err != nil {
+	// 	log.Fatalln("%#V", err)
+	// }
 	// //............................................................
-	student := Student{ID: uID}
+	var form UserForm
+	
+	student := storage.Student{ID: uID}
 	if err := h.formDecoder.Decode(&student, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
-
-	if err := student.ValidateStudent(); err != nil {
+    form.Student = student
+	if err := student.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			student.FormError = vErr
+			form.FormError = vErr
 		}
-		pareseStudentTemplate(w, student)
+		pareseStudentTemplate(w, form)
 		return
 	}
 
-	const UpdateQQ = `
-	UPDATE Students SET
-	    first_name =:first_name,
-		last_name =:last_name,
-		class = :class,
-		roll = :roll,
-		email = :email,
-		password = :password
-		WHERE id= :id;
-	`
-	//.....................................................................
-	stmt, err := h.db.PrepareNamed(UpdateQQ)
+	
+	UpdateStudent,err := h.storage.UpdateStudent(student)
 	if err != nil {
-		log.Fatalln(err)
-	}
-	res, err := stmt.Exec(student)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	Rcount, err := res.RowsAffected()
-	if Rcount < 1 || err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 
-	http.Redirect(w, r, "/list/student", http.StatusSeeOther)
-
+	// http.Redirect(w, r, ("/list/student"), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintln("/list/student",UpdateStudent), http.StatusSeeOther)
 }
