@@ -109,7 +109,7 @@ func main() {
 	sessionManager.Cookie.Name = "web-session"
 	sessionManager.Cookie.HttpOnly = true
 	sessionManager.Cookie.Secure = true
-	// sessionManager.Store = NewSQLXStore(postgresStorage.DB)
+	sessionManager.Store = NewSQLXStore(postgresStorage.DB)
 
 	// End Sesson
 
