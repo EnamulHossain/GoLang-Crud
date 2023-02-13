@@ -2,6 +2,9 @@ package handler
 
 import (
 	"StudentManagement/storage"
+	"html/template"
+	"net/http"
+	"strings"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi"
@@ -12,16 +15,16 @@ import (
 type connection struct {
 	storage        dbStorage
 	sessionManager *scs.SessionManager
-	formDecoder    *form.Decoder
+	decoder        *form.Decoder
+	Templates      *template.Template
 }
 type dbStorage interface {
 	ListUser() ([]storage.User, error)
 	CreateUser(u storage.User) (*storage.User, error)
 	UpdateUser(u storage.User) (*storage.User, error)
 	GetUserByID(id string) (*storage.User, error)
-	GetUserByUsername(username string) (*storage.User, error)
+	GetUserByUsername(name string) (*storage.User, error)
 	DeleteUserByID(id string) error
-
 
 	CreateStudent(u storage.Student) (*storage.Student, error)
 	ListStudent() ([]storage.Student, error)
@@ -31,11 +34,11 @@ type dbStorage interface {
 	DeleteStudentByID(id string) error
 }
 
-func New(storage dbStorage, sm *scs.SessionManager, formDecoder *form.Decoder) (connection, *chi.Mux) {
+func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
 	c := connection{
 		sessionManager: sm,
-		formDecoder:    formDecoder,
-		storage:        storage ,
+		decoder:        decoder,
+		storage:        storage,
 	}
 
 	r := chi.NewRouter()
@@ -43,29 +46,89 @@ func New(storage dbStorage, sm *scs.SessionManager, formDecoder *form.Decoder) (
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(Method)
 
-	r.Get("/", c.Home)
-	r.Get("/login", c.Login)
-	r.Get("/reg", c.Reg)
-
-	r.Get("/create/student", c.CreateStudent)
-	r.Post("/student/store", c.StoreStudent)
-	r.Get("/list/student", c.ListStudent)
-	r.Get("/student/delete/{{.ID}}", c.DeleteStudent)
-	r.Get("/student/{id:[0-9]+}/edit", c.StudentEdit)
-	r.Post("/student/{id:[0-9]+}/update", c.StudentUpdate)
-
-	r.Route("/user", func(r chi.Router) {
-
-		r.Post("/store", c.StoreUser)
-		r.Get("/list", c.UserList)
-		r.Get("/delete/{{.ID}}", c.DeleteUser)
-		r.Get("/{id:[0-9]+}/edit", c.EditUser)
-		r.Post("/{id:[0-9]+}/update", c.UpdateUser)
+	r.Group(func(r chi.Router) {
+		// r.Use(sm.LoadAndSave)
+		r.Get("/", c.Home)
+		r.Get("/login", c.Login)
+		r.Get("/reg", c.Reg)
+		r.Post("/login", c.LoginPostHandler)
+		r.Post("/user/store", c.StoreUser)
 
 	})
 
-	r.Post("/user/login", c.LoginUser)
+	r.Group(func(r chi.Router) {
+		r.Use(sm.LoadAndSave)
+		r.Use(c.Authentication)
+
+		r.Get("/create/student", c.CreateStudent)
+		r.Post("/student/store", c.StoreStudent)
+		r.Get("/list/student", c.ListStudent)
+		r.Get("/student/delete/{{.ID}}", c.DeleteStudent)
+		r.Get("/student/{id:[0-9]+}/edit", c.StudentEdit)
+		r.Post("/student/{id:[0-9]+}/update", c.StudentUpdate)
+
+		r.Route("/user", func(r chi.Router) {
+			r.Get("/list", c.UserList)
+			r.Get("/delete/{{.ID}}", c.DeleteUser)
+			r.Get("/{id:[0-9]+}/edit", c.EditUser)
+			r.Post("/{id:[0-9]+}/update", c.UpdateUser)
+
+		})
+	})
+	r.Get("/logout", c.LogoutHandler)
 
 	return c, r
 }
+
+func Method(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			switch strings.ToLower(r.PostFormValue("_method")) {
+			case "put":
+				r.Method = http.MethodPut
+			case "patch":
+				r.Method = http.MethodPatch
+			case "delete":
+				r.Method = http.MethodDelete
+			default:
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (h connection) Authentication(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userName := h.sessionManager.GetString(r.Context(), "userName")
+		userNamem := userName
+		// if err != nil {
+		// 	log.Println(err)
+		// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
+		// 	return
+		// }
+		if userNamem == "" {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// func (h *connection) ParseTemplates() error {
+// 	templates := template.New("web-templates").Funcs(template.FuncMap{
+// 		"globalfunc": func(n string) string {
+// 			return ""
+// 		},
+// 	})
+
+// 	newFS := os.DirFS("templates")
+// 	tmpl := template.Must(templates.ParseFS(newFS, "*/*/*.html", "*/*.html", "*.html"))
+// 	if tmpl == nil {
+// 		log.Fatalln("unable to parse templates")
+// 	}
+
+// 	h.Templates = tmpl
+// 	return nil
+// }

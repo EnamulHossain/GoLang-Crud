@@ -50,7 +50,7 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var form UserForm
 	user := storage.User{ID: uID}
-	if err := c.formDecoder.Decode(&user, r.PostForm); err != nil {
+	if err := c.decoder.Decode(&user, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
 

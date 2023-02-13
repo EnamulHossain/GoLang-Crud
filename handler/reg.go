@@ -44,7 +44,7 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 	form := UserForm{}
 	user := storage.User{}
 
-	if err := c.formDecoder.Decode(&user, r.PostForm); err != nil {
+	if err := c.decoder.Decode(&user, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
 

@@ -48,7 +48,7 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 
 	
 	student := storage.Student{ID: uID}
-	if err := h.formDecoder.Decode(&student, r.PostForm); err != nil {
+	if err := h.decoder.Decode(&student, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
     form.Student = student

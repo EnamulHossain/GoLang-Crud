@@ -1,20 +1,37 @@
 package handler
 
 import (
+	"StudentManagement/storage/postgres"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/justinas/nosurf"
+	"golang.org/x/crypto/bcrypt"
 	// "golang.org/x/crypto/bcrypt"
-	// validation "github.com/go-ozzo/ozzo-validation/v4"
-	// "github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
-//	type login struct{
-//		username string
-//		password string
-//	}
+type LoginUser struct {
+	Name      string `form:"name"`
+	Password  string `form:"password"`
+	FormError map[string]error
+	CSRFToken string
+}
+
+func (lu LoginUser) Validate() error {
+	return validation.ValidateStruct(&lu,
+		validation.Field(&lu.Name,
+			validation.Required.Error("The username field is required."),
+		),
+		validation.Field(&lu.Password,
+			validation.Required.Error("The password field is required."),
+		),
+	)
+}
+
 func pareseLoginTemplate(w http.ResponseWriter, data any) {
 	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/login.html")
 	if err != nil {
@@ -24,117 +41,68 @@ func pareseLoginTemplate(w http.ResponseWriter, data any) {
 }
 
 func (c connection) Login(w http.ResponseWriter, r *http.Request) {
-	pareseLoginTemplate(w, UserForm{
+	pareseLoginTemplate(w, LoginUser{
 		CSRFToken: nosurf.Token(r),
 	})
 }
 
-func (c *connection) LoginUser(w http.ResponseWriter, r *http.Request) {
+func (c connection) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := r.ParseForm(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 
-	// Name := r.FormValue("username")
-	// Password := r.FormValue("password")
+	var lf LoginUser
 
-	// l := login{
-	// 	username: Name,
-	// 	password: Password,
-	// }
+	if err := c.decoder.Decode(&lf, r.PostForm); err != nil {
+		log.Println(err)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
 
-	// compareLogin:=
+	if err := lf.Validate(); err != nil {
+		if vErr, ok := err.(validation.Errors); ok {
+			formErr := make(map[string]error)
+			for key, val := range vErr {
+				formErr[strings.Title(key)] = val
+			}
+			lf.FormError = formErr
+			lf.Password = ""
+			lf.CSRFToken = nosurf.Token(r)
+			pareseLoginTemplate(w, lf)
+			return
+		}
+	}
 
+	user, err := c.storage.GetUserByUsername(lf.Name)
+	if err != nil {
+		if err.Error() == postgres.NotFound {
+			formErr := make(map[string]error)
+			formErr["Name"] = fmt.Errorf("credentials does not match")
+			lf.FormError = formErr
+			lf.CSRFToken = nosurf.Token(r)
+			lf.Password = ""
+			pareseLoginTemplate(w, lf)
+			return
+		}
+
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+
+	
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(lf.Password)); err != nil {
+		formErr := make(map[string]error)
+		formErr["Name"] = fmt.Errorf("credentials does not match")
+		lf.FormError = formErr
+		lf.CSRFToken = nosurf.Token(r)
+		lf.Password = ""
+		pareseLoginTemplate(w, lf)
+		return
+	}
+
+
+	c.sessionManager.Put(r.Context(), "userName", (user.Name))
 	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
-
 }
-
-// // package handler
-
-// import (
-// 	"html/template"
-// 	"log"
-// 	"net/http"
-
-// 	validation "github.com/go-ozzo/ozzo-validation/v4"
-// 	"github.com/go-ozzo/ozzo-validation/v4/is"
-// 	"github.com/gorilla/csrf"
-// )
-
-// type Login struct {
-// 	Email    string
-// 	Password string
-// }
-
-// type LoginTempData struct {
-// 	CSRFField  template.HTML
-// 	Form       Login
-// 	FormErrors map[string]string
-// }
-
-// func (l Login) Validate() error {
-// 	return validation.ValidateStruct(&l,
-// 		validation.Field(&l.Email, validation.Required, is.Email),
-// 		validation.Field(&l.Password, validation.Required, validation.Length(6, 12)),
-// 	)
-// }
-
-// func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("Method: getLogin")
-// 	formData := LoginTempData{
-// 		CSRFField: csrf.TemplateField(r),
-// 	}
-// 	s.loadLoginTemplate(w, r, formData)
-// }
-
-// func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
-// 	log.Println("Method: postLogin")
-
-// 	if err := r.ParseForm(); err != nil {
-// 		log.Fatalln("parsing error")
-// 	}
-
-// 	var form Login
-// 	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
-// 		log.Fatalln("decoding error")
-// 	}
-
-// 	if err := form.ValidateL(); err != nil {
-// 		vErrs := map[string]string{}
-// 		if e, ok := err.(validation.Errors); ok {
-// 			if len(e) > 0 {
-// 				for key, value := range e {
-// 					vErrs[key] = value.Error()
-// 				}
-// 			}
-// 		}
-
-// 		data := LoginTempData{
-// 			CSRFField:  csrf.TemplateField(r),
-// 			Form:       form,
-// 			FormErrors: vErrs,
-// 		}
-// 		s.loadLoginTemplate(w, r, data)
-// 		return
-// 	}
-
-// 	hash, _ := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.DefaultCost)
-// 	if err:= bcrypt.CompareHashAndPassword(hash, []byte("123456")); err != nil{
-// 		log.Fatalf("Password does not match ")
-// 	}
-
-// 	session, _ := s.session.Get(r, "practice_session")
-// 	session.Values["user_id"] = "1"
-// 	if err := session.Save(r, w); err != nil {
-// 		log.Fatalln("error while saving user id into session")
-// 	}
-// 	http.Redirect(w, r, "/student/create", http.StatusTemporaryRedirect)
-// }
-
-// func (s *Server) loadLoginTemplate(w http.ResponseWriter, r *http.Request, form LoginTempData) {
-// 	tmp := s.templates.Lookup("login.html")
-// 	if err := tmp.Execute(w, form); err != nil {
-// 		log.Println("Error executing template :", err)
-// 		return
-// 	}
-// }

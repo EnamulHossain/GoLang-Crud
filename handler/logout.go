@@ -5,9 +5,10 @@ import (
 	"net/http"
 )
 
-func (h connection) LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	if err := h.sessionManager.Destroy(r.Context()); err != nil {
+func (c connection) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	if err := c.sessionManager.Destroy(r.Context()); err != nil {
 		log.Fatal(err)
 	}
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

@@ -34,10 +34,10 @@ const createUserQuery = `
 
 func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 
-	var user storage.User
+	
 	stmt, _ := s.DB.PrepareNamed(createUserQuery)
 // HAsh
-	HassPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	HassPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
@@ -45,14 +45,14 @@ func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 
 //ENd HAsh
 
-	if err := stmt.Get(&user, u); err != nil {
+	if err := stmt.Get(&u, u); err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
-	if user.ID == 0 {
+	if u.ID == 0 {
 		log.Println("Unable to insert user into db")
 	}
-	return &user, nil
+	return &u, nil
 }
 
 const UpdateQQ = `
@@ -89,11 +89,11 @@ func (s PostgresStorage) GetUserByID(id string) (*storage.User, error) {
 }
 
 
-const getUserByUsernameQuery = `SELECT * FROM users WHERE username=$1 AND deleted_at IS NULL`
+const getUserByUsernameQuery = `SELECT * FROM users WHERE name=$1 AND deleted_at IS NULL`
 
-func (s PostgresStorage) GetUserByUsername(username string) (*storage.User, error) {
+func (s PostgresStorage) GetUserByUsername(name string) (*storage.User, error) {
 	var u storage.User
-	if err := s.DB.Get(&u, getUserByUsernameQuery, username); err != nil {
+	if err := s.DB.Get(&u, getUserByUsernameQuery, name); err != nil {
 		log.Println(err)
 		return nil, err
 	}

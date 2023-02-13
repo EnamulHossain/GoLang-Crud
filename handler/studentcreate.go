@@ -41,7 +41,7 @@ func (c *connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
 	form :=UserForm{}
 	students := storage.Student{}
 
-	if err := c.formDecoder.Decode(&students, r.PostForm); err != nil {
+	if err := c.decoder.Decode(&students, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
 

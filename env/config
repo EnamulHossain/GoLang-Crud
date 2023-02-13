@@ -5,8 +5,8 @@ port=3020
 driver=smtp
 host=mail.mailtrap.io
 port=3453
-username=dsnfskfs
-password=smfdlfdf
+username=postgres
+password=secret
 enctype=tls
 
 [session]
@@ -16,7 +16,7 @@ idletime=20
 [database]
 host=127.0.0.1
 port=5432
-dbname=studentmanagement
+dbname=stm
 user=postgres
 password=secret
 sslmode=disable
