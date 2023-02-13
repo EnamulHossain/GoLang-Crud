@@ -3,7 +3,6 @@ package handler
 import (
 	"StudentManagement/storage/postgres"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -11,7 +10,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/justinas/nosurf"
 	"golang.org/x/crypto/bcrypt"
-	// "golang.org/x/crypto/bcrypt"
 )
 
 type LoginUser struct {
@@ -32,16 +30,10 @@ func (lu LoginUser) Validate() error {
 	)
 }
 
-func pareseLoginTemplate(w http.ResponseWriter, data any) {
-	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/login.html")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	t.ExecuteTemplate(w, "login.html", data)
-}
+
 
 func (c connection) Login(w http.ResponseWriter, r *http.Request) {
-	pareseLoginTemplate(w, LoginUser{
+	c.pareseLoginTemplate(w, LoginUser{
 		CSRFToken: nosurf.Token(r),
 	})
 }
@@ -69,7 +61,7 @@ func (c connection) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			lf.FormError = formErr
 			lf.Password = ""
 			lf.CSRFToken = nosurf.Token(r)
-			pareseLoginTemplate(w, lf)
+			c.pareseLoginTemplate(w, lf)
 			return
 		}
 	}
@@ -82,7 +74,7 @@ func (c connection) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 			lf.FormError = formErr
 			lf.CSRFToken = nosurf.Token(r)
 			lf.Password = ""
-			pareseLoginTemplate(w, lf)
+			c.pareseLoginTemplate(w, lf)
 			return
 		}
 
@@ -98,7 +90,7 @@ func (c connection) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 		lf.FormError = formErr
 		lf.CSRFToken = nosurf.Token(r)
 		lf.Password = ""
-		pareseLoginTemplate(w, lf)
+		c.pareseLoginTemplate(w, lf)
 		return
 	}
 

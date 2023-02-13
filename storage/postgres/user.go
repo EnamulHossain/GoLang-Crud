@@ -69,6 +69,13 @@ func (s PostgresStorage) UpdateUser(u storage.User) (*storage.User, error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	// HAsh
+	HassPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	u.Password = string(HassPass)
+//ENd HAsh
 	if err := stmt.Get(&u, u); err != nil {
 		log.Fatal(err)
 		return nil, err

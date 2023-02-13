@@ -3,9 +3,12 @@ package handler
 import (
 	"StudentManagement/storage"
 	"html/template"
+	"log"
 	"net/http"
+	"os"
 	"strings"
 
+	"github.com/Masterminds/sprig"
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -41,6 +44,8 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 		storage:        storage,
 	}
 
+	c.ParseTemplates()
+
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -58,25 +63,31 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 
 	})
 
+	// workDir, _ := os.Getwd()
+	// filesDir := http.Dir(filepath.Join(workDir, "assets/src"))
+	// r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(filesDir)))
+
 	r.Group(func(r chi.Router) {
 		r.Use(sm.LoadAndSave)
 		r.Use(c.Authentication)
 
-		r.Get("/create/student", c.CreateStudent)
-		r.Post("/student/store", c.StoreStudent)
-		r.Get("/list/student", c.ListStudent)
-		r.Get("/student/delete/{{.ID}}", c.DeleteStudent)
-		r.Get("/student/{id:[0-9]+}/edit", c.StudentEdit)
-		r.Post("/student/{id:[0-9]+}/update", c.StudentUpdate)
+		r.Route("/student", func(r chi.Router) {
+			r.Get("/create", c.CreateStudent)
+			r.Post("/store", c.StoreStudent)
+			r.Get("/list", c.ListStudent)
+			r.Get("/delete/{{.ID}}", c.DeleteStudent)
+			r.Get("/{id:[0-9]+}/edit", c.StudentEdit)
+			r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
+		})
 
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/list", c.UserList)
 			r.Get("/delete/{{.ID}}", c.DeleteUser)
 			r.Get("/{id:[0-9]+}/edit", c.EditUser)
 			r.Post("/{id:[0-9]+}/update", c.UpdateUser)
-
 		})
 	})
+	
 	r.Get("/logout", c.LogoutHandler)
 
 	return c, r
@@ -116,19 +127,18 @@ func (h connection) Authentication(next http.Handler) http.Handler {
 	})
 }
 
-// func (h *connection) ParseTemplates() error {
-// 	templates := template.New("web-templates").Funcs(template.FuncMap{
-// 		"globalfunc": func(n string) string {
-// 			return ""
-// 		},
-// 	})
+func (h *connection) ParseTemplates() error {
+	templates := template.New("StudentManagement-template").Funcs(template.FuncMap{
+		"globalfunc": func(n string) string {
+			return ""
+		},
+	}).Funcs(sprig.FuncMap())
+	newFS := os.DirFS("assets/template")
+	tmpl := template.Must(templates.ParseFS(newFS, "*.html"))
+	if tmpl == nil {
+		log.Fatalln("unable to parse templates")
+	}
 
-// 	newFS := os.DirFS("templates")
-// 	tmpl := template.Must(templates.ParseFS(newFS, "*/*/*.html", "*/*.html", "*.html"))
-// 	if tmpl == nil {
-// 		log.Fatalln("unable to parse templates")
-// 	}
-
-// 	h.Templates = tmpl
-// 	return nil
-// }
+	h.Templates = tmpl
+	return nil
+}

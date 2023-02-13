@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -20,18 +19,10 @@ type UserForm struct {
 	CSRFToken string
 }
 
-func pareseRegTemplate(w http.ResponseWriter, data any) {
-	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/reg.html")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	if err := t.ExecuteTemplate(w, "reg.html", data); err != nil {
-		log.Fatal(err)
-	}
-}
+
 
 func (c connection) Reg(w http.ResponseWriter, r *http.Request) {
-	pareseRegTemplate(w, UserForm{
+	c.pareseRegTemplate(w, UserForm{
 		CSRFToken: nosurf.Token(r),
 	})
 }
@@ -55,7 +46,7 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 			// fmt.Println(vErr)
 			form.FormError = vErr
 		}
-		pareseRegTemplate(w, form)
+		c.pareseRegTemplate(w, form)
 		return
 	}
 

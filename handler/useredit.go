@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,13 +12,7 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-func pareseEditUserTemplate(w http.ResponseWriter, data any) {
-	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/edituser.html")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	t.ExecuteTemplate(w, "edituser.html", data)
-}
+
 
 func (c connection) EditUser(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -32,7 +25,7 @@ func (c connection) EditUser(w http.ResponseWriter, r *http.Request) {
 	var form UserForm
 	form.User = *UserEdit
 	form.CSRFToken = nosurf.Token(r)
-	pareseEditUserTemplate(w, form)
+	c.pareseEditUserTemplate(w, form)
 
 }
 
@@ -59,7 +52,7 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		if vErr, ok := err.(validation.Errors); ok {
 			form.FormError = vErr
 		}
-		pareseRegTemplate(w, form)
+		c.pareseRegTemplate(w, form)
 		return
 	}
 

@@ -3,6 +3,7 @@ module StudentManagement
 go 1.19
 
 require (
+	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/alexedwards/scs/v2 v2.5.0
 	github.com/go-chi/chi v1.5.4
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
@@ -12,6 +13,16 @@ require (
 	github.com/lib/pq v1.10.7
 	github.com/pressly/goose/v3 v3.9.0
 	github.com/spf13/viper v1.15.0
+)
+
+require (
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/semver v1.5.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
+	github.com/huandu/xstrings v1.4.0 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
+	github.com/mitchellh/copystructure v1.2.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 )
 
 require (

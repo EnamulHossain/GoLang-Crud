@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -16,18 +15,9 @@ import (
 
 
 
-func pareseStudentTemplate(w http.ResponseWriter, data any) {
-	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/createstudent.html")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	if err := t.ExecuteTemplate(w, "createstudent.html", data); err != nil {
-		log.Fatal(err)
-	}
-}
 
 func (c connection) CreateStudent(w http.ResponseWriter, r *http.Request) {
-	pareseStudentTemplate(w, UserForm{
+	c.pareseStudentTemplate(w, UserForm{
 		CSRFToken: nosurf.Token(r),
 	})
 }
@@ -50,7 +40,7 @@ func (c *connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
 		if vErr, ok := err.(validation.Errors); ok {
 			form.FormError = vErr
 		}
-		pareseStudentTemplate(w, form)
+		c.pareseStudentTemplate(w, form)
 		return
 	}
 

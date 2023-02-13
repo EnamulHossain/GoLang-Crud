@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,13 +12,7 @@ import (
 	// "github.com/go-chi/chi/v5"
 )
 
-func pareseEditStudentTemplate(w http.ResponseWriter, data any) {
-	t, err := template.ParseFiles("./template/header.html", "./template/footer.html", "./template/editstudent.html")
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	t.ExecuteTemplate(w, "editstudent.html", data)
-}
+
 
 func (c connection) StudentEdit(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
@@ -27,7 +20,7 @@ func (c connection) StudentEdit(w http.ResponseWriter, r *http.Request) {
 	var form UserForm
 	form.Student = *editStudent
 	form.CSRFToken = nosurf.Token(r)
-	pareseEditStudentTemplate(w, form)
+	c.pareseEditStudentTemplate(w, form)
 
 }
 
@@ -56,7 +49,7 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 		if vErr, ok := err.(validation.Errors); ok {
 			form.FormError = vErr
 		}
-		pareseStudentTemplate(w, form)
+		h.pareseStudentTemplate(w, form)
 		return
 	}
 
