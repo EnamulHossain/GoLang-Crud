@@ -62,15 +62,6 @@
     </header>
 
 
-
-
-
-
-
-
-
-
-
 <br>
 <div class="p-16 bg-gray-100">
     <section class="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800">
@@ -78,31 +69,7 @@
 
             <form action="/user/store" method="post">
 
-                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-
-                <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
-                    <div>
-                        <label class="text-gray-700 dark:text-gray-200" for="username">Username</label>
-                        <input name="name" id="name" type="text" value="{{ .User.Name }}"
-                            class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring">
-                            <p style="color: red;">{{ .FormError.Name }}</p>
-                    </div>
-
-                    <div>
-                        <label class="text-gray-700 dark:text-gray-200" for="emailAddress">Email Address</label>
-                        <input name="email" id="email" type="email" value="{{ .User.Email }}"
-                            class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring">
-                            <p style="color: red;">{{ .FormError.Email }}</p>
-                        </div>
-
-                    <div>
-                        <label class="text-gray-700 dark:text-gray-200" for="password">Password</label>
-                        <input name="password" id="password" type="password"
-                            class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring">
-                            <p style="color: red;">{{ .FormError.Password }}</p>
-                    </div>
-
-                </div>
+                {{ template "_form.html"}}
 
                 <div class="flex justify-center mt-6">
                     <button type="submit" class="rounded-md bg-teal-600 px-16 py-2.5 text-sm font-medium text-white shadow hover:bg-gray-600 focus:outline-none focus:bg-gray-600">Submit</button>
@@ -110,6 +77,4 @@
             </form>
     </section>
 </div>
-
-
 {{ template "footer.html"}}

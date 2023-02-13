@@ -9,9 +9,7 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-//	type UserList struct {
-//		Users []User `db:"users"`
-//	}
+
 type UserForm struct {
 	User      storage.User
 	Student   storage.Student

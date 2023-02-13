@@ -6,25 +6,20 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
-
-
+// student 
 type Student struct {
-	ID        int       `db:"id" form:"-"`
-	FirstName string    `db:"first_name" form:"first_name"`
-	LastName  string    `db:"last_name" form:"last_name"`
-	Class     string    `db:"class" form:"class"`
-	Roll      int       `db:"roll" form:"roll"`
-	Email     string    `db:"email" form:"email"`
-	Password  string    `db:"password" form:"password"`
-	CreatedAt time.Time `db:"created_at" form:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" form:"updated_at"`
+	ID        int          `db:"id" form:"-"`
+	FirstName string       `db:"first_name" form:"first_name"`
+	LastName  string       `db:"last_name" form:"last_name"`
+	Class     string       `db:"class" form:"class"`
+	Roll      int          `db:"roll" form:"roll"`
+	Email     string       `db:"email" form:"email"`
+	Password  string       `db:"password" form:"password"`
+	CreatedAt time.Time    `db:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
-	// CSRFToken string    `db:"-" form:"csrf_token"`
-	// FormError map[string]error
+
 }
-
-
-
 
 func (s Student) Validate() error {
 	vre := validation.Required.Error
@@ -45,9 +40,7 @@ func (s Student) Validate() error {
 	)
 }
 
-
-
-
+// Reg
 
 type User struct {
 	ID        int          `db:"id" form:"-"`
@@ -58,10 +51,8 @@ type User struct {
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
-	// CSRFToken string       `db:"-" form:"csrf_token"`
-	// FormError map[string]error
+	
 }
-
 
 func (u User) Validate() error {
 	vre := validation.Required.Error
@@ -73,6 +64,26 @@ func (u User) Validate() error {
 		),
 		validation.Field(&u.Email, vre("The Email  is required")),
 		validation.Field(&u.Password, vre("The Password  is required")),
+	)
+}
+
+// login
+
+type LoginUser struct {
+	Name      string `form:"name"`
+	Password  string `form:"password"`
+	FormError map[string]error
+	CSRFToken string
+}
+
+func (lu LoginUser) Validate() error {
+	return validation.ValidateStruct(&lu,
+		validation.Field(&lu.Name,
+			validation.Required.Error("The username field is required."),
+		),
+		validation.Field(&lu.Password,
+			validation.Required.Error("The password field is required."),
+		),
 	)
 }
 

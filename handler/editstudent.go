@@ -60,6 +60,6 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 
-	http.Redirect(w, r, ("/list/student"), http.StatusSeeOther)
+	http.Redirect(w, r, ("/student/list"), http.StatusSeeOther)
 
 }

@@ -9,11 +9,6 @@ import (
 	"github.com/justinas/nosurf"
 )
 
-// type StudentList struct{
-// 	Students []storage.Student `db: "students"`
-// }
-
-
 
 
 func (c connection) CreateStudent(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +23,7 @@ func (c *connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	form :=UserForm{}
+	form := UserForm{}
 	students := storage.Student{}
 
 	if err := c.decoder.Decode(&students, r.PostForm); err != nil {
@@ -44,10 +39,10 @@ func (c *connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_,err:= c.storage.CreateStudent(students)
+	_, err := c.storage.CreateStudent(students)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	http.Redirect(w, r, "/list/student", http.StatusSeeOther)
+	http.Redirect(w, r, "/student/list", http.StatusSeeOther)
 }

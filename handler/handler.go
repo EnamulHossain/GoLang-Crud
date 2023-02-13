@@ -63,9 +63,6 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 
 	})
 
-	// workDir, _ := os.Getwd()
-	// filesDir := http.Dir(filepath.Join(workDir, "assets/src"))
-	// r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(filesDir)))
 
 	r.Group(func(r chi.Router) {
 		r.Use(sm.LoadAndSave)
@@ -114,11 +111,6 @@ func (h connection) Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userName := h.sessionManager.GetString(r.Context(), "userName")
 		userNamem := userName
-		// if err != nil {
-		// 	log.Println(err)
-		// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-		// 	return
-		// }
 		if userNamem == "" {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
@@ -134,7 +126,7 @@ func (h *connection) ParseTemplates() error {
 		},
 	}).Funcs(sprig.FuncMap())
 	newFS := os.DirFS("assets/template")
-	tmpl := template.Must(templates.ParseFS(newFS, "*.html"))
+	tmpl := template.Must(templates.ParseFS(newFS, "*/*/*.html","*.html"))
 	if tmpl == nil {
 		log.Fatalln("unable to parse templates")
 	}
