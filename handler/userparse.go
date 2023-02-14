@@ -92,3 +92,16 @@ func (c connection) pareseStudentListTemplate(w http.ResponseWriter, data any) {
 	}
 	t.Execute(w, data)
 }
+
+
+
+
+func(c connection) pareseHomeTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("home.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}

@@ -22,11 +22,15 @@ func (s PostgresStorage) ListUser() ([]storage.User, error) {
 
 const createUserQuery = `
 	INSERT INTO users(
+		first_name, 
+ 		last_name, 
 		name,
 		email,
 		password
 		)  VALUES(
-			:name,
+		:first_name, 
+		:last_name, 
+		:name,
 		:email,
 		:password
 		)
@@ -34,16 +38,15 @@ const createUserQuery = `
 
 func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 
-	
 	stmt, _ := s.DB.PrepareNamed(createUserQuery)
-// HAsh
+	// HAsh
 	HassPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 	u.Password = string(HassPass)
 
-//ENd HAsh
+	//ENd HAsh
 
 	if err := stmt.Get(&u, u); err != nil {
 		log.Fatal(err)
@@ -57,9 +60,12 @@ func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 
 const UpdateQQ = `
 UPDATE Users SET
+	first_name =:first_name,
+	last_name =:last_name,
 	name =:name,
-	email = :email,
-	password = :password
+	email =:email,
+	password =:password,
+	status =:status
 	WHERE id= :id AND deleted_at IS NULL RETURNING *;
 `
 
@@ -69,13 +75,14 @@ func (s PostgresStorage) UpdateUser(u storage.User) (*storage.User, error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	// HAsh
 	HassPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 	u.Password = string(HassPass)
-//ENd HAsh
+	//ENd HAsh
 	if err := stmt.Get(&u, u); err != nil {
 		log.Fatal(err)
 		return nil, err
@@ -95,7 +102,6 @@ func (s PostgresStorage) GetUserByID(id string) (*storage.User, error) {
 	return &u, nil
 }
 
-
 const getUserByUsernameQuery = `SELECT * FROM users WHERE name=$1 AND deleted_at IS NULL`
 
 func (s PostgresStorage) GetUserByUsername(name string) (*storage.User, error) {
@@ -107,9 +113,6 @@ func (s PostgresStorage) GetUserByUsername(name string) (*storage.User, error) {
 
 	return &u, nil
 }
-
-
-
 
 const deleteUserByIdQuery = `UPDATE users SET deleted_at = CURRENT_TIMESTAMP WHERE id=$1 AND deleted_at IS NULL`
 
