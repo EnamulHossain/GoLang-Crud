@@ -15,11 +15,10 @@ import (
 type UserForm struct {
 	User      storage.User
 	Student   storage.Student
+	Class     storage.Class
 	FormError map[string]error
 	CSRFToken string
 }
-
-
 
 func (c connection) Reg(w http.ResponseWriter, r *http.Request) {
 	c.pareseRegTemplate(w, UserForm{
@@ -40,7 +39,7 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form.User = user
-	
+
 	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
 			// fmt.Println(vErr)

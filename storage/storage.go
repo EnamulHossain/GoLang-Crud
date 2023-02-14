@@ -76,3 +76,20 @@ func (u User) Validate() error {
 		validation.Field(&u.Password, vre("The Password  is required")),
 	)
 }
+
+// Class
+
+type Class struct {
+	ID        int    `db:"id" form:"-"`
+	ClassName string `db:"class_name" form:"class_name"`
+	CreatedAt time.Time    `db:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
+}
+
+func (c Class) Validate() error {
+	vre := validation.Required.Error
+	return validation.ValidateStruct(&c,
+		validation.Field(&c.ClassName, vre("The Class Name  is required")),
+	)
+}

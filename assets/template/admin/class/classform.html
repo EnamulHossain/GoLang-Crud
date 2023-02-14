@@ -1,0 +1,13 @@
+
+<input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
+<h1 class="text-teal-800 flex justify-center text-lg mb-6">Add class</h1>
+<div class="grid md:grid-cols-2 md:gap-6 p-6">
+    <div>
+        <label class="text-gray-700 dark:text-gray-200" for="class_name">Class Name</label>
+        <input name="class_name" id="class_name" type="text" value="{{ .Class.ClassName }}"
+            class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring">
+        <p style="color: red;">{{ .FormError.ClassName }}</p>
+    </div>
+</div>
+<br>
+

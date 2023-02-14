@@ -35,6 +35,14 @@ type dbStorage interface {
 	GetStudentByID(id string) (*storage.Student, error)
 	GetStudentByUsername(username string) (*storage.Student, error)
 	DeleteStudentByID(id string) error
+
+
+
+	ListClass() ([]storage.Class, error)
+	CreateClass(c storage.Class) (*storage.Class, error)
+	UpdateClass(c storage.Class) (*storage.Class, error)
+	GetClassByID(id string) (*storage.Class, error)
+	DeleteClassByID(id string) error 
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -80,6 +88,15 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
 		})
 
+		r.Route("/class", func(r chi.Router) {
+			r.Get("/create", c.CreateClass)
+			r.Post("/store", c.StoreClass)
+			r.Get("/list", c.ListClass)  
+			r.Get("/delete/{{.ID}}", c.DeleteClass)
+			r.Get("/{id:[0-9]+}/edit", c.ClassEdit)
+			r.Post("/{id:[0-9]+}/update", c.ClassUpdate)
+		})
+
 		r.Route("/user", func(r chi.Router) {
 			r.Get("/list", c.UserList)
 			r.Get("/delete/{{.ID}}", c.DeleteUser)
@@ -114,11 +131,6 @@ func (h connection) Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userName := h.sessionManager.GetString(r.Context(), "userName")
 		userNamem := userName
-		// if err != nil {
-		// 	log.Println(err)
-		// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-		// 	return
-		// }
 		if userNamem == "" {
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
