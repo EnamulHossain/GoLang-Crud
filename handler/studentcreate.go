@@ -5,19 +5,21 @@ import (
 	"log"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/justinas/nosurf"
 )
-
-// type StudentList struct{
-// 	Students []storage.Student `db: "students"`
-// }
 
 
 
 
 func (c connection) CreateStudent(w http.ResponseWriter, r *http.Request) {
+	classList,err := c.storage.ListClass()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	c.pareseStudentTemplate(w, UserForm{
+		ClassList: classList,
 		CSRFToken: nosurf.Token(r),
 	})
 }

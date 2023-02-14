@@ -16,6 +16,7 @@ type UserForm struct {
 	User      storage.User
 	Student   storage.Student
 	Class     storage.Class
+	ClassList []storage.Class
 	FormError map[string]error
 	CSRFToken string
 }
