@@ -14,5 +14,5 @@ func (c *connection) DeleteStudent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/list/student", http.StatusSeeOther)
+	http.Redirect(w, r, "/student/list", http.StatusSeeOther)
 }

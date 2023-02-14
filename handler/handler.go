@@ -134,7 +134,7 @@ func (h *connection) ParseTemplates() error {
 		},
 	}).Funcs(sprig.FuncMap())
 	newFS := os.DirFS("assets/template")
-	tmpl := template.Must(templates.ParseFS(newFS, "*.html"))
+	tmpl := template.Must(templates.ParseFS(newFS, "*/*/*.html","*.html"))
 	if tmpl == nil {
 		log.Fatalln("unable to parse templates")
 	}
