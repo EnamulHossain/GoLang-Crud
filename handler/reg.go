@@ -2,6 +2,7 @@ package handler
 
 import (
 	"StudentManagement/storage"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -16,6 +17,7 @@ type UserForm struct {
 	User      storage.User
 	Student   storage.Student
 	Class     storage.Class
+	Subject   storage.Subject
 	ClassList []storage.Class
 	FormError map[string]error
 	CSRFToken string
@@ -52,7 +54,8 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 
 	_, err := c.storage.CreateUser(user)
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
+		fmt.Println(err)
 	}
 	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
 }

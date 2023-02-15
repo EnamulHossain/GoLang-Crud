@@ -113,3 +113,28 @@ func (c connection) pareseClassEditTemplate(w http.ResponseWriter, data any) {
 		log.Fatal(err)
 	}
 }
+
+
+//  
+
+
+func (c connection) pareseSubjectTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("subjectcreate.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}
+
+
+func (c connection) pareseSujectListTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("subjectlist.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}

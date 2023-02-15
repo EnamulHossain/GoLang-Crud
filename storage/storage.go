@@ -80,8 +80,8 @@ func (u User) Validate() error {
 // Class
 
 type Class struct {
-	ID        int    `db:"id" form:"-"`
-	ClassName string `db:"class_name" form:"class_name"`
+	ID        int          `db:"id" form:"-"`
+	ClassName string       `db:"class_name" form:"class_name"`
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
@@ -91,5 +91,33 @@ func (c Class) Validate() error {
 	vre := validation.Required.Error
 	return validation.ValidateStruct(&c,
 		validation.Field(&c.ClassName, vre("The Class Name  is required")),
+	)
+}
+
+// Subject
+
+type Subject struct {
+	ID        int          `db:"id" form:"-"`
+	Class     string       `db:"class" form:"class"`
+	Subject1  string       `db:"subject1" form:"subject1"`
+	Subject2  string       `db:"subject2" form:"subject2"`
+	Subject3  string       `db:"subject3" form:"subject3"`
+	Subject4  string       `db:"subject4" form:"subject4"`
+	CreatedAt time.Time    `db:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
+}
+
+func (s Subject) Validate() error {
+	vre := validation.Required.Error
+	return validation.ValidateStruct(&s,
+		validation.Field(&s.Class,
+			vre("The FirstName  is required"),
+		),
+		validation.Field(&s.Subject1,vre("The LastName  is required"),),
+		validation.Field(&s.Subject2,vre("The LastName  is required"),),
+		validation.Field(&s.Subject3,vre("The LastName  is required"),),
+		validation.Field(&s.Subject4,vre("The LastName  is required"),),
+		
 	)
 }

@@ -36,13 +36,15 @@ type dbStorage interface {
 	GetStudentByUsername(username string) (*storage.Student, error)
 	DeleteStudentByID(id string) error
 
-
-
 	ListClass() ([]storage.Class, error)
 	CreateClass(c storage.Class) (*storage.Class, error)
 	UpdateClass(c storage.Class) (*storage.Class, error)
 	GetClassByID(id string) (*storage.Class, error)
-	DeleteClassByID(id string) error 
+	DeleteClassByID(id string) error
+
+
+	ListSubject() ([]storage.Subject, error)
+	CreateSubject(storage.Subject) (*storage.Subject, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -88,10 +90,20 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
 		})
 
+		// SUBJECT
+		r.Route("/subject", func(r chi.Router) {
+			r.Get("/create", c.CreateSubject)
+			r.Post("/store", c.StoreSubject)
+			r.Get("/list", c.ListSubject)
+			// r.Get("/delete/{{.ID}}", c.DeleteStudent)
+			// r.Get("/{id:[0-9]+}/edit", c.StudentEdit)
+			// r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
+		})
+
 		r.Route("/class", func(r chi.Router) {
 			r.Get("/create", c.CreateClass)
 			r.Post("/store", c.StoreClass)
-			r.Get("/list", c.ListClass)  
+			r.Get("/list", c.ListClass)
 			r.Get("/delete/{{.ID}}", c.DeleteClass)
 			r.Get("/{id:[0-9]+}/edit", c.ClassEdit)
 			r.Post("/{id:[0-9]+}/update", c.ClassUpdate)
@@ -104,7 +116,7 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Post("/{id:[0-9]+}/update", c.UpdateUser)
 		})
 	})
-	
+
 	r.Get("/logout", c.LogoutHandler)
 
 	return c, r
@@ -146,7 +158,7 @@ func (h *connection) ParseTemplates() error {
 		},
 	}).Funcs(sprig.FuncMap())
 	newFS := os.DirFS("assets/template")
-	tmpl := template.Must(templates.ParseFS(newFS, "*/*/*.html","*.html"))
+	tmpl := template.Must(templates.ParseFS(newFS, "*/*/*.html", "*.html"))
 	if tmpl == nil {
 		log.Fatalln("unable to parse templates")
 	}

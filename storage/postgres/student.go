@@ -41,19 +41,20 @@ INSERT INTO students (
 func (s PostgresStorage) CreateStudent(u storage.Student) (*storage.Student, error) {
 
 	var student storage.Student
-	stmt, _ := s.DB.PrepareNamed(createStudentQuery)
-
+	stmt, err := s.DB.PrepareNamed(createStudentQuery)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	// HAsh
 	HassPass, err := bcrypt.GenerateFromPassword([]byte(student.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 	u.Password = string(HassPass)
+	//ENd HAsh
 
-//ENd HAsh
 
-
-	if err := stmt.Get(&student,u); err != nil {
+	if err := stmt.Get(&student, u); err != nil {
 		return nil, err
 	}
 	if student.ID == 0 {

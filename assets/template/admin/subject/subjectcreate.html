@@ -1,0 +1,87 @@
+{{template "header.html"}}
+
+
+
+
+<div class="m-8 p-16 bg-gray-100">
+
+    <section class="max-w-4xl p-6 mx-auto bg-white rounded-md shadow-md dark:bg-gray-800">
+        <form class="" action="/subject/store" method="Post">
+            <input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
+            <h1 class="text-teal-800 flex justify-center text-lg mb-6">Add Subject</h1>
+
+            <div class="grid md:grid-cols-2 md:gap-6">
+
+                <div class="relative z-0 w-full mb-6 group">
+                    <label for="class"
+                        class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500">Select A Class</label>
+                        <select name="class" id="" class="text-gray-900 text-sm  w-full">
+                            <option value="">Select A Class<option>
+                                {{ range .ClassList}}
+                                    <option value="{{.ID }}">{{.ClassName}}</option>
+                                {{ end }}
+                        </select>
+                </div>
+
+               
+            </div>
+
+            <div class="grid md:grid-cols-2 md:gap-6">
+
+                <div class="relative z-0 w-full mb-6 group">
+                    <input type="text" name="subject1" id="subject1"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="subject1"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Subject 1</label>
+
+                </div>
+
+                <div class="relative z-0 w-full mb-6 group">
+                    <input type="text" name="subject2" id="subject2"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="subject2"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Subject 2</label>
+
+                </div>
+
+                
+
+            </div>
+
+
+            <div class="grid md:grid-cols-2 md:gap-6">
+
+                <div class="relative z-0 w-full mb-6 group">
+                    <input type="text" name="subject3" id="subject3"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="subject3"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Subject 3</label>
+
+                </div>
+
+                <div class="relative z-0 w-full mb-6 group">
+                    <input type="text" name="subject4" id="subject4"
+                        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                        placeholder=" " required />
+                    <label for="subject4"
+                        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Subject 4</label>
+
+                </div>
+
+                
+
+            </div>
+
+            <div class="flex justify-center mt-auto">
+                <button type="submit"
+                    class="rounded-md bg-teal-600 px-16 py-2.5 text-sm font-medium text-white shadow hover:bg-gray-600 focus:outline-none focus:bg-gray-600">Submit</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+
+{{ template "footer.html"}}
