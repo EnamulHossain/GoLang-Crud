@@ -138,3 +138,13 @@ func (c connection) pareseSujectListTemplate(w http.ResponseWriter, data any) {
 		log.Fatal(err)
 	}
 }
+
+
+
+func (c connection) pareseEditSubjectTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("subjectedit.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	t.Execute(w, data)
+}

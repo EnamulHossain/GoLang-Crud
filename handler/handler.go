@@ -42,9 +42,11 @@ type dbStorage interface {
 	GetClassByID(id string) (*storage.Class, error)
 	DeleteClassByID(id string) error
 
-
 	ListSubject() ([]storage.Subject, error)
 	CreateSubject(storage.Subject) (*storage.Subject, error)
+	DeleteSubjectByID(id string) error
+	GetSubjectByID(id string) (*storage.Subject, error)
+	UpdateSubject(u storage.Subject) (*storage.Subject, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -95,9 +97,9 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Get("/create", c.CreateSubject)
 			r.Post("/store", c.StoreSubject)
 			r.Get("/list", c.ListSubject)
-			// r.Get("/delete/{{.ID}}", c.DeleteStudent)
-			// r.Get("/{id:[0-9]+}/edit", c.StudentEdit)
-			// r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
+			r.Get("/delete/{{.ID}}", c.DeleteSubject)
+			r.Get("/{id:[0-9]+}/edit", c.EditSubject)
+			r.Post("/{id:[0-9]+}/update", c.SubjectUpdate) //
 		})
 
 		r.Route("/class", func(r chi.Router) {
