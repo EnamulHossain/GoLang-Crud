@@ -14,13 +14,14 @@ import (
 //		Users []User `db:"users"`
 //	}
 type UserForm struct {
-	User      storage.User
-	Student   storage.Student
-	Class     storage.Class
-	Subject   storage.Subject
-	ClassList []storage.Class
-	FormError map[string]error
-	CSRFToken string
+	User        storage.User
+	Student     storage.Student
+	StudentList []storage.Student
+	Class       storage.Class
+	Subject     storage.Subject
+	ClassList   []storage.Class
+	FormError   map[string]error
+	CSRFToken   string
 }
 
 func (c connection) Reg(w http.ResponseWriter, r *http.Request) {

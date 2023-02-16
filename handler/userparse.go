@@ -115,7 +115,7 @@ func (c connection) pareseClassEditTemplate(w http.ResponseWriter, data any) {
 }
 
 
-//  
+//   Subject
 
 
 func (c connection) pareseSubjectTemplate(w http.ResponseWriter, data any) {
@@ -147,4 +147,20 @@ func (c connection) pareseEditSubjectTemplate(w http.ResponseWriter, data any) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 	t.Execute(w, data)
+}
+
+
+
+
+// Mark
+
+
+func (c connection) pareseMarkTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("addmark.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
 }

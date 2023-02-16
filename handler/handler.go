@@ -102,6 +102,7 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Post("/{id:[0-9]+}/update", c.SubjectUpdate) //
 		})
 
+		// Class
 		r.Route("/class", func(r chi.Router) {
 			r.Get("/create", c.CreateClass)
 			r.Post("/store", c.StoreClass)
@@ -109,6 +110,16 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Get("/delete/{{.ID}}", c.DeleteClass)
 			r.Get("/{id:[0-9]+}/edit", c.ClassEdit)
 			r.Post("/{id:[0-9]+}/update", c.ClassUpdate)
+		})
+
+		// Mark
+		r.Route("/mark", func(r chi.Router) {
+			r.Get("/create", c.CreateMark)
+			// r.Post("/store", c.StoreClass)
+			// r.Get("/list", c.ListClass)
+			// r.Get("/delete/{{.ID}}", c.DeleteClass)
+			// r.Get("/{id:[0-9]+}/edit", c.ClassEdit)
+			// r.Post("/{id:[0-9]+}/update", c.ClassUpdate)
 		})
 
 		r.Route("/user", func(r chi.Router) {
