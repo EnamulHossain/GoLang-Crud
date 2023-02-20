@@ -4,7 +4,6 @@ import (
 	"StudentManagement/storage"
 	"fmt"
 	"log"
-
 )
 
 const listClassQuery = `SELECT * FROM classes WHERE deleted_at IS NULL ORDER BY id ASC`
@@ -25,6 +24,8 @@ INSERT INTO classes (
  ) VALUES (
 	:class_name
 	)
+	ON CONFLICT (class_name) DO UPDATE SET
+	class_name = EXCLUDED.class_name
 	returning *`
 
 func (s PostgresStorage) CreateClass(c storage.Class) (*storage.Class, error) {
@@ -35,7 +36,7 @@ func (s PostgresStorage) CreateClass(c storage.Class) (*storage.Class, error) {
 		log.Fatalln(err)
 	}
 
-	if err := stmt.Get(&class,c); err != nil {
+	if err := stmt.Get(&class, c); err != nil {
 		return nil, err
 	}
 	if class.ID == 0 {
@@ -43,7 +44,6 @@ func (s PostgresStorage) CreateClass(c storage.Class) (*storage.Class, error) {
 	}
 	return &class, nil
 }
-
 
 const UpdateClassQ = `
 	UPDATE classes SET
@@ -63,8 +63,6 @@ func (s PostgresStorage) UpdateClass(c storage.Class) (*storage.Class, error) {
 	return &c, nil
 }
 
-
-
 const getClassByIDQuery = `SELECT * FROM classes WHERE id=$1 AND deleted_at IS NULL`
 
 func (a PostgresStorage) GetClassByID(id string) (*storage.Class, error) {
@@ -76,7 +74,6 @@ func (a PostgresStorage) GetClassByID(id string) (*storage.Class, error) {
 
 	return &s, nil
 }
-
 
 // const deleteClassByIdQuery = `UPDATE classes SET deleted_at = CURRENT_TIMESTAMP WHERE id=$1 AND deleted_at IS NULL`
 

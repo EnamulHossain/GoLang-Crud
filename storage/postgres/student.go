@@ -68,7 +68,6 @@ const UpdateStudentQ = `
 	UPDATE students SET
 	    first_name =:first_name,
 		last_name =:last_name,
-		class = :class,
 		roll = :roll,
 		email = :email,
 		password = :password
@@ -80,9 +79,13 @@ func (s PostgresStorage) UpdateStudent(u storage.Student) (*storage.Student, err
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if err := stmt.Get(&u, u); err != nil {
-		log.Fatal(err)
-		return nil, err
+	res, err := stmt.Exec(u)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	Rcount, err := res.RowsAffected()
+	if Rcount < 1 || err != nil {
+		log.Fatalln(err)
 	}
 	return &u, nil
 }

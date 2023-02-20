@@ -2,9 +2,11 @@ package handler
 
 import (
 	"StudentManagement/storage"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -46,10 +48,18 @@ func (h connection) SubjectUpdate(w http.ResponseWriter, r *http.Request) {
 	if err := h.decoder.Decode(&subject, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
+
+	fmt.Println("sub data ?????",subject)
+
     form.Subject = subject
 	if err := subject.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			form.FormError = vErr
+			Nerr := make(map[string]error)
+			for key, val := range vErr {
+				Nerr[strings.Title(key)] = val
+			}
+			form.FormError = Nerr
+			form.CSRFToken = nosurf.Token(r)
 		}
 		h.pareseSubjectTemplate(w, form)
 		return

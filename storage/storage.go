@@ -2,6 +2,7 @@ package storage
 
 import (
 	"database/sql"
+	"regexp"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -11,7 +12,7 @@ type Student struct {
 	ID        int          `db:"id" form:"-"`
 	FirstName string       `db:"first_name" form:"first_name"`
 	LastName  string       `db:"last_name" form:"last_name"`
-	Class     string       `db:"class" form:"class"`
+	Class     int          `db:"class" form:"class"`
 	Roll      int          `db:"roll" form:"roll"`
 	Email     string       `db:"email" form:"email"`
 	Password  string       `db:"password" form:"password"`
@@ -58,6 +59,9 @@ type User struct {
 
 func (u User) Validate() error {
 	vre := validation.Required.Error
+	nameRule := validation.Match(
+		regexp.MustCompile(`^[^\s]+$`)).
+		Error("Name must not contain spaces")
 	len := validation.Length(2, 20).Error
 	return validation.ValidateStruct(&u,
 		validation.Field(&u.FirstName,
@@ -70,7 +74,7 @@ func (u User) Validate() error {
 		),
 		validation.Field(&u.Name,
 			vre("The name  is required"),
-			len("The name field must be between 2 to 20 characters."),
+			len("The name field must be between 2 to 20 characters."), nameRule,
 		),
 		validation.Field(&u.Email, vre("The Email  is required")),
 		validation.Field(&u.Password, vre("The Password  is required")),
@@ -89,8 +93,12 @@ type Class struct {
 
 func (c Class) Validate() error {
 	vre := validation.Required.Error
+	classRule := validation.Match(
+		regexp.MustCompile(`^Class [1-9]$|^Class 10$`)).
+		Error("Class must be in the format 'Class [1-10]'")
 	return validation.ValidateStruct(&c,
-		validation.Field(&c.ClassName, vre("The Class Name  is required")),
+		validation.Field(&c.ClassName, vre("The Class Name  is required"),
+			classRule),
 	)
 }
 
@@ -98,11 +106,9 @@ func (c Class) Validate() error {
 
 type Subject struct {
 	ID        int          `db:"id" form:"-"`
-	Class     string       `db:"class" form:"class"`
+	Class     int          `db:"class" form:"class"`
 	Subject1  string       `db:"subject1" form:"subject1"`
-	Subject2  string       `db:"subject2" form:"subject2"`
-	Subject3  string       `db:"subject3" form:"subject3"`
-	Subject4  string       `db:"subject4" form:"subject4"`
+	
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
@@ -112,12 +118,18 @@ func (s Subject) Validate() error {
 	vre := validation.Required.Error
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.Class,
-			vre("The FirstName  is required"),
+			vre("The Class  is required"),
 		),
-		validation.Field(&s.Subject1,vre("The LastName  is required"),),
-		validation.Field(&s.Subject2,vre("The LastName  is required"),),
-		validation.Field(&s.Subject3,vre("The LastName  is required"),),
-		validation.Field(&s.Subject4,vre("The LastName  is required"),),
-		
+		validation.Field(&s.Subject1, vre("The LastName  is required")),
 	)
+}
+
+type StudentSubject struct {
+	ID        int          `db:"id" form:"-"`
+	StudentID int          `db:"student_id" form:"student_id"`
+	SubjectID int          `db:"subject_id" form:"subject_id"`
+	Marks     int          `db:"marks" form:"marks"`
+	CreatedAt time.Time    `db:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
 }

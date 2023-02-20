@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
-	validation "github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/justinas/nosurf"
 	// "github.com/go-chi/chi/v5"
 )
@@ -37,9 +38,6 @@ func (h connection) ClassUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var form UserForm
-
-
-	
 	class := storage.Class{ID: uID}
 	if err := h.decoder.Decode(&class, r.PostForm); err != nil {
 		log.Fatal(err)
@@ -48,7 +46,12 @@ func (h connection) ClassUpdate(w http.ResponseWriter, r *http.Request) {
 	
 	if err := class.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			form.FormError = vErr
+			Nerr := make(map[string]error)
+			for key, val := range vErr {
+				Nerr[strings.Title(key)] = val
+			}
+			form.FormError = Nerr
+			form.CSRFToken = nosurf.Token(r)
 		}
 		h.pareseClassTemplate(w, form)
 		return

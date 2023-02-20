@@ -47,6 +47,11 @@ type dbStorage interface {
 	DeleteSubjectByID(id string) error
 	GetSubjectByID(id string) (*storage.Subject, error)
 	UpdateSubject(u storage.Subject) (*storage.Subject, error)
+
+
+
+	GetSubjectByClassID(class int) ([]storage.Subject, error)
+	InsertMark(s storage.StudentSubject) (*storage.StudentSubject, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {

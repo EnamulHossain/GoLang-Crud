@@ -100,7 +100,6 @@ func (s PostgresStorage) GetSubjectByID(id string) (*storage.Subject, error) {
 
 const UpdateSubjectQ = `
 	UPDATE subjects SET
-	class =:class,
 	subject1 =:subject1
 		WHERE id= :id AND deleted_at IS NULL RETURNING *;
 	`

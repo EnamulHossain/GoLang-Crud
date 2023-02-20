@@ -1,0 +1,78 @@
+<input type="hidden" name="csrf_token" value="{{ .CSRFToken }}">
+
+<div class="grid md:grid-cols-2 md:gap-6">
+    <div class="relative z-0 w-full mb-6 group">
+        <input type="text" name="first_name" id="floating_first_name" value="{{.Student.FirstName}}"
+            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" " required />
+        <label for="first_name"
+            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First
+            name</label>
+        <p style="color: red;">{{ .FormError.FirstName }}</p>
+
+    </div>
+    <div class="relative z-0 w-full mb-6 group">
+        <input type="text" name="last_name" id="floating_last_name" value="{{.Student.LastName}}"
+            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" " required />
+        <label for="last_name"
+            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Last
+            name</label>
+        <p style="color: red;">{{ .FormError.LastName }}</p>
+
+    </div>
+</div>
+
+<div class="grid md:grid-cols-2 md:gap-6">
+    <div class="relative z-0 w-full mb-6 group">
+        <label for="class"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500">Select
+            A Class</label>
+
+        {{if eq .Student.ID 0 }}
+
+        <select name="class" id="" class="text-gray-900 text-sm  w-full">
+            <option value="">Select A Class
+            <option>
+                {{ range .ClassList}}
+            <option value="{{.ID }}">{{.ClassName}}</option>
+            {{ end }}
+        </select>
+        {{end}}
+        
+        {{if gt .Student.ID 0 }}
+        <input
+        class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        id="class" {{if .Student.ID}} readonly="" {{end}} name="class" value="{{.Student.Class}}">
+        {{end}}
+    </div>
+
+    <div class="relative z-0 w-full mb-6 group">
+        <input type="number" name="roll" id="roll" value="{{.Student.Roll}}"
+            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" " required />
+        <label for="roll"
+            class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Roll</label>
+        <p style="color: red;">{{ .FormError.Roll }}</p>
+
+    </div>
+</div>
+
+<div class="relative z-0 w-full mb-6 group">
+    <input type="email" name="email" id="floating_email" value="{{.Student.Email}}"
+        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        placeholder=" " required />
+    <label for="floating_email"
+        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email
+        address</label>
+    <p style="color: red;">{{ .FormError.Email }}</p>
+
+</div>
+<div class="relative z-0 w-full mb-6 group">
+    <input type="password" name="password" id="floating_password"
+        class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+        placeholder=" " required />
+    <label for="floating_password"
+        class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
+    <p style="color: red;">{{ .FormError.Password }}</p>
+</div>

@@ -2,26 +2,25 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
-	validation "github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/justinas/nosurf"
 )
 
-//	type UserList struct {
-//		Users []User `db:"users"`
-//	}
 type UserForm struct {
-	User        storage.User
-	Student     storage.Student
-	StudentList []storage.Student
-	Class       storage.Class
-	Subject     storage.Subject
-	ClassList   []storage.Class
-	FormError   map[string]error
-	CSRFToken   string
+	User           storage.User
+	Student        storage.Student
+	StudentList    []storage.Student
+	Class          storage.Class
+	Subject        storage.Subject
+	SubjectList    []storage.Subject
+	ClassList      []storage.Class
+	StudentSubject []storage.StudentSubject
+	FormError      map[string]error
+	CSRFToken      string
 }
 
 func (c connection) Reg(w http.ResponseWriter, r *http.Request) {
@@ -46,17 +45,20 @@ func (c connection) StoreUser(w http.ResponseWriter, r *http.Request) {
 
 	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			// fmt.Println(vErr)
-			form.FormError = vErr
+			Nerr := make(map[string]error)
+			for key, val := range vErr {
+				Nerr[strings.Title(key)] = val
+			}
+			form.FormError = Nerr
+			form.CSRFToken = nosurf.Token(r)
 		}
-		c.pareseRegTemplate(w, form)
+		c.pareseEditUserTemplate(w, form)
 		return
 	}
 
 	_, err := c.storage.CreateUser(user)
 	if err != nil {
 		log.Println(err)
-		fmt.Println(err)
 	}
 	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
 }

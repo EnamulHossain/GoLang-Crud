@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
-	validation "github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
 
 	"github.com/justinas/nosurf"
 )
@@ -48,9 +49,15 @@ func (c connection) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form.User = user
+
 	if err := user.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			form.FormError = vErr
+			Nerr := make(map[string]error)
+			for key, val := range vErr {
+				Nerr[strings.Title(key)] = val
+			}
+			form.FormError = Nerr
+			form.CSRFToken = nosurf.Token(r)
 		}
 		c.pareseRegTemplate(w, form)
 		return

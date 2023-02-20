@@ -4,6 +4,7 @@ import (
 	"StudentManagement/storage"
 	"log"
 	"net/http"
+	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/justinas/nosurf"
@@ -40,16 +41,26 @@ func (c *connection) StoreStudent(w http.ResponseWriter, r *http.Request) {
 	form.Student = students
 	if err := students.Validate(); err != nil {
 		if vErr, ok := err.(validation.Errors); ok {
-			form.FormError = vErr
+			Nerr := make(map[string]error)
+			for key, val := range vErr {
+				Nerr[strings.Title(key)] = val
+			}
+			form.FormError = Nerr
+			form.CSRFToken = nosurf.Token(r)
 		}
 		c.pareseStudentTemplate(w, form)
 		return
 	}
 
-	_,err:= c.storage.CreateStudent(students)
+
+	
+
+	data,err:= c.storage.CreateStudent(students)
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	c.MarksHandler(w,r, students.Class, data.ID)
 
 	http.Redirect(w, r, "/student/list", http.StatusSeeOther)
 }
