@@ -25,6 +25,9 @@ type Student struct {
 
 func (s Student) Validate() error {
 	vre := validation.Required.Error
+	rollRule := validation.Match(
+        regexp.MustCompile(`^[^-][0-9]+$`)).
+        Error("Roll number must be a positive integer")
 	len := validation.Length(2, 20).Error
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.FirstName,
@@ -36,7 +39,7 @@ func (s Student) Validate() error {
 			len("The LastName field must be between 2 to 20 characters."),
 		),
 		validation.Field(&s.Class, vre("The Class  is required")),
-		validation.Field(&s.Roll, vre("The Roll  is required")),
+		validation.Field(&s.Roll, vre("The Roll  is required"),rollRule),
 		validation.Field(&s.Email, vre("The Email  is required")),
 		validation.Field(&s.Password, vre("The Password  is required")),
 	)

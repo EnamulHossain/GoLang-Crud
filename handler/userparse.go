@@ -164,3 +164,25 @@ func (c connection) pareseMarkTemplate(w http.ResponseWriter, data any) {
 		log.Fatal(err)
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+func (c connection) pareseLHomeTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("lhome.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}

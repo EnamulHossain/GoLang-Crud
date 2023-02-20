@@ -87,6 +87,8 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 	r.Group(func(r chi.Router) {
 		r.Use(sm.LoadAndSave)
 		r.Use(c.Authentication)
+		r.Get("/home", c.LHome)
+
 
 		r.Route("/student", func(r chi.Router) {
 			r.Get("/create", c.CreateStudent)

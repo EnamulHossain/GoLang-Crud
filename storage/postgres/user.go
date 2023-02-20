@@ -63,7 +63,6 @@ UPDATE Users SET
 	first_name =:first_name,
 	last_name =:last_name,
 	name =:name,
-	email =:email,
 	password =:password,
 	status =:status
 	WHERE id= :id AND deleted_at IS NULL RETURNING *;
