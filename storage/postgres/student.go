@@ -8,12 +8,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const listStudentQuery = `SELECT * FROM students WHERE deleted_at IS NULL ORDER BY id ASC`
+const listStudentQuery = `SELECT * FROM students WHERE deleted_at IS NULL AND (first_name ILIKE '%%' || $1 || '%%' OR last_name ILIKE '%%' || $1 || '%%' OR email ILIKE '%%' || $1 || '%%') ORDER BY id ASC`
 
-func (s PostgresStorage) ListStudent() ([]storage.Student, error) {
+func (s PostgresStorage) ListStudent(sf storage.StudentFilter) ([]storage.Student, error) {
 
 	var student []storage.Student
-	if err := s.DB.Select(&student, listStudentQuery); err != nil {
+	if err := s.DB.Select(&student, listStudentQuery, sf.SearchTerm); err != nil {
 		log.Fatal(err)
 		return nil, err
 	}

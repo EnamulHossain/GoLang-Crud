@@ -18,5 +18,5 @@ CREATE TABLE IF NOT EXISTS student_subjects (
 
 -- +goose Down
 -- +goose StatementBegin
-SELECT 'down SQL query';
+DROP TABLE IF EXISTS student_subjects;
 -- +goose StatementEnd

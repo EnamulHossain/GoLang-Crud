@@ -8,12 +8,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const listQuery = `SELECT * FROM users WHERE deleted_at IS NULL ORDER BY id ASC`
+const listQuery = `SELECT * FROM users WHERE deleted_at IS NULL AND (first_name ILIKE '%%' || $1 || '%%' OR last_name ILIKE '%%' || $1 || '%%' OR email ILIKE '%%' || $1 || '%%' OR name ILIKE '%%' || $1 || '%%') ORDER BY id ASC`
 
-func (s PostgresStorage) ListUser() ([]storage.User, error) {
+func (s PostgresStorage) ListUser(uf storage.UserFilter) ([]storage.User, error) {
 
 	var user []storage.User
-	if err := s.DB.Select(&user, listQuery); err != nil {
+	if err := s.DB.Select(&user, listQuery, uf.SearchTerm); err != nil {
 		log.Fatal(err)
 		return nil, err
 	}

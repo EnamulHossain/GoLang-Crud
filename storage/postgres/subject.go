@@ -52,12 +52,12 @@ func (s PostgresStorage) CreateSubject(u storage.Subject) (*storage.Subject, err
 	return &subject, nil
 }
 
-const listSubjectQuery = `SELECT * FROM subjects WHERE deleted_at IS NULL ORDER BY class ASC`
+const listSubjectQuery = `SELECT * FROM subjects WHERE deleted_at IS NULL AND (subject1 ILIKE '%%' || $1 || '%%') ORDER BY class ASC`
 
-func (s PostgresStorage) ListSubject() ([]storage.Subject, error) {
+func (s PostgresStorage) ListSubject(sf storage.SubjectFilter) ([]storage.Subject, error) {
 
 	var subject []storage.Subject
-	if err := s.DB.Select(&subject, listSubjectQuery); err != nil {
+	if err := s.DB.Select(&subject, listSubjectQuery,sf.SearchTerm); err != nil {
 		log.Fatal(err)
 		return nil, err
 	}

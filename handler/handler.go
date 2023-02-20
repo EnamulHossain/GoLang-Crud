@@ -22,7 +22,7 @@ type connection struct {
 	Templates      *template.Template
 }
 type dbStorage interface {
-	ListUser() ([]storage.User, error)
+	ListUser(storage.UserFilter) ([]storage.User, error)
 	CreateUser(u storage.User) (*storage.User, error)
 	UpdateUser(u storage.User) (*storage.User, error)
 	GetUserByID(id string) (*storage.User, error)
@@ -30,7 +30,7 @@ type dbStorage interface {
 	DeleteUserByID(id string) error
 
 	CreateStudent(u storage.Student) (*storage.Student, error)
-	ListStudent() ([]storage.Student, error)
+	ListStudent(storage.StudentFilter) ([]storage.Student, error)
 	UpdateStudent(u storage.Student) (*storage.Student, error)
 	GetStudentByID(id string) (*storage.Student, error)
 	GetStudentByUsername(username string) (*storage.Student, error)
@@ -42,7 +42,7 @@ type dbStorage interface {
 	GetClassByID(id string) (*storage.Class, error)
 	DeleteClassByID(id string) error
 
-	ListSubject() ([]storage.Subject, error)
+	ListSubject(storage.SubjectFilter) ([]storage.Subject, error)
 	CreateSubject(storage.Subject) (*storage.Subject, error)
 	DeleteSubjectByID(id string) error
 	GetSubjectByID(id string) (*storage.Subject, error)

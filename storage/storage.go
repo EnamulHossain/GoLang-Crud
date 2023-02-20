@@ -8,6 +8,10 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
+type StudentFilter struct{
+	SearchTerm string
+}
+
 type Student struct {
 	ID        int          `db:"id" form:"-"`
 	FirstName string       `db:"first_name" form:"first_name"`
@@ -43,6 +47,12 @@ func (s Student) Validate() error {
 		validation.Field(&s.Email, vre("The Email  is required")),
 		validation.Field(&s.Password, vre("The Password  is required")),
 	)
+}
+
+
+
+type UserFilter struct{
+	SearchTerm string
 }
 
 type User struct {
@@ -106,6 +116,11 @@ func (c Class) Validate() error {
 }
 
 // Subject
+
+
+type SubjectFilter struct{
+	SearchTerm string
+}
 
 type Subject struct {
 	ID        int          `db:"id" form:"-"`
