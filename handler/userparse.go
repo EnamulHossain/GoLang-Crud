@@ -114,9 +114,7 @@ func (c connection) pareseClassEditTemplate(w http.ResponseWriter, data any) {
 	}
 }
 
-
 //   Subject
-
 
 func (c connection) pareseSubjectTemplate(w http.ResponseWriter, data any) {
 	t := c.Templates.Lookup("subjectcreate.html")
@@ -128,7 +126,6 @@ func (c connection) pareseSubjectTemplate(w http.ResponseWriter, data any) {
 	}
 }
 
-
 func (c connection) pareseSujectListTemplate(w http.ResponseWriter, data any) {
 	t := c.Templates.Lookup("subjectlist.html")
 	if t == nil {
@@ -139,8 +136,6 @@ func (c connection) pareseSujectListTemplate(w http.ResponseWriter, data any) {
 	}
 }
 
-
-
 func (c connection) pareseEditSubjectTemplate(w http.ResponseWriter, data any) {
 	t := c.Templates.Lookup("subjectedit.html")
 	if t == nil {
@@ -149,11 +144,7 @@ func (c connection) pareseEditSubjectTemplate(w http.ResponseWriter, data any) {
 	t.Execute(w, data)
 }
 
-
-
-
 // Mark
-
 
 func (c connection) pareseMarkTemplate(w http.ResponseWriter, data any) {
 	t := c.Templates.Lookup("addmark.html")
@@ -165,20 +156,18 @@ func (c connection) pareseMarkTemplate(w http.ResponseWriter, data any) {
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 func (c connection) pareseLHomeTemplate(w http.ResponseWriter, data any) {
 	t := c.Templates.Lookup("lhome.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (c connection) pareseMarkinputTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("input.html")
 	if t == nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}

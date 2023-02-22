@@ -6,7 +6,6 @@ require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/alexedwards/scs/v2 v2.5.0
 	github.com/go-chi/chi v1.5.4
-	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/justinas/nosurf v1.1.1

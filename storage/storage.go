@@ -8,7 +8,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-type StudentFilter struct{
+type StudentFilter struct {
 	SearchTerm string
 }
 
@@ -29,9 +29,9 @@ type Student struct {
 
 func (s Student) Validate() error {
 	vre := validation.Required.Error
-	rollRule := validation.Match(
-        regexp.MustCompile(`^[^-][0-9]+$`)).
-        Error("Roll number must be a positive integer")
+	// rollRule := validation.Match(
+	// 	regexp.MustCompile(`^[^-][0-9]+$`)).
+	// 	Error("Roll number must be a positive integer")
 	len := validation.Length(2, 20).Error
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.FirstName,
@@ -43,15 +43,13 @@ func (s Student) Validate() error {
 			len("The LastName field must be between 2 to 20 characters."),
 		),
 		validation.Field(&s.Class, vre("The Class  is required")),
-		validation.Field(&s.Roll, vre("The Roll  is required"),rollRule),
+		validation.Field(&s.Roll, vre("The Roll  is required")),
 		validation.Field(&s.Email, vre("The Email  is required")),
 		validation.Field(&s.Password, vre("The Password  is required")),
 	)
 }
 
-
-
-type UserFilter struct{
+type UserFilter struct {
 	SearchTerm string
 }
 
@@ -117,16 +115,15 @@ func (c Class) Validate() error {
 
 // Subject
 
-
-type SubjectFilter struct{
+type SubjectFilter struct {
 	SearchTerm string
 }
 
 type Subject struct {
-	ID        int          `db:"id" form:"-"`
-	Class     int          `db:"class" form:"class"`
-	Subject1  string       `db:"subject1" form:"subject1"`
-	
+	ID       int    `db:"id" form:"-"`
+	Class    int    `db:"class" form:"class"`
+	Subject1 string `db:"subject1" form:"subject1"`
+
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
@@ -147,6 +144,18 @@ type StudentSubject struct {
 	StudentID int          `db:"student_id" form:"student_id"`
 	SubjectID int          `db:"subject_id" form:"subject_id"`
 	Marks     int          `db:"marks" form:"marks"`
+	CreatedAt time.Time    `db:"created_at" form:"created_at"`
+	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
+	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
+}
+
+type MarkInputStore struct {
+	// ID        int               `db:"id" form:"-"`
+	FirstName string            `db:"first_name" form:"first_name"`
+	LastName  string            `db:"last_name" form:"last_name"`
+	Class     int               `db:"class" form:"class"`
+	Roll      int               `db:"roll" form:"roll"`
+	Subject1  string `db:"subject1" form:"subject1"`
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`

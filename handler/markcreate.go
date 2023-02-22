@@ -28,4 +28,6 @@ func (c connection) CreateMark(w http.ResponseWriter, r *http.Request) {
 		StudentList: studentList,
 		CSRFToken: nosurf.Token(r),
 	})
+
+	
 }

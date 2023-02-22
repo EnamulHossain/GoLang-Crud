@@ -10,6 +10,13 @@ import (
 	"github.com/justinas/nosurf"
 )
 
+type MarkForm struct {
+	Class           string
+	Student         string
+	CSRFToken      string
+}
+
+
 type UserForm struct {
 	User           storage.User
 	Student        storage.Student
@@ -19,6 +26,7 @@ type UserForm struct {
 	SubjectList    []storage.Subject
 	ClassList      []storage.Class
 	StudentSubject []storage.StudentSubject
+	MarkInput      []storage.MarkInputStore
 	FormError      map[string]error
 	CSRFToken      string
 }

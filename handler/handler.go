@@ -48,10 +48,10 @@ type dbStorage interface {
 	GetSubjectByID(id string) (*storage.Subject, error)
 	UpdateSubject(u storage.Subject) (*storage.Subject, error)
 
-
-
 	GetSubjectByClassID(class int) ([]storage.Subject, error)
 	InsertMark(s storage.StudentSubject) (*storage.StudentSubject, error)
+
+	GetMarkInputOptionByID(id string) ([]storage.MarkInputStore, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -89,7 +89,6 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 		r.Use(c.Authentication)
 		r.Get("/home", c.LHome)
 
-
 		r.Route("/student", func(r chi.Router) {
 			r.Get("/create", c.CreateStudent)
 			r.Post("/store", c.StoreStudent)
@@ -122,7 +121,7 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 		// Mark
 		r.Route("/mark", func(r chi.Router) {
 			r.Get("/create", c.CreateMark)
-			// r.Post("/store", c.StoreClass)
+			r.Post("/input-mark", c.MarkInput)
 			// r.Get("/list", c.ListClass)
 			// r.Get("/delete/{{.ID}}", c.DeleteClass)
 			// r.Get("/{id:[0-9]+}/edit", c.ClassEdit)
@@ -135,7 +134,14 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Get("/{id:[0-9]+}/edit", c.EditUser)
 			r.Post("/{id:[0-9]+}/update", c.UpdateUser)
 		})
+
+
+
+		
 	})
+
+
+
 
 	r.Get("/logout", c.LogoutHandler)
 
