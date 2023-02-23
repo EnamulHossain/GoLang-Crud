@@ -191,3 +191,14 @@ func (c connection) pareseResultTemplate(w http.ResponseWriter, data any) {
 	}
 }
 
+
+
+func (c connection) pareseAllResultTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("allresult.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}

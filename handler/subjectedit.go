@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -49,7 +48,6 @@ func (h connection) SubjectUpdate(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("sub data ?????",subject)
 
     form.Subject = subject
 	if err := subject.Validate(); err != nil {

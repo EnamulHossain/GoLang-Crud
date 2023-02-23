@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -16,9 +15,7 @@ import (
 func (c connection) StudentEdit(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
-	fmt.Println("#############", id)
 	editStudent, _ := c.storage.GetStudentByID(id)
-	fmt.Println("#############**", editStudent)
 
 	var form UserForm
 	form.Student = *editStudent
@@ -30,14 +27,12 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	fmt.Println("#############", id)
 
 
 	uID, err := strconv.Atoi(id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("#############", uID)
 
 
 	if err := r.ParseForm(); err != nil {
@@ -51,7 +46,6 @@ func (h connection) StudentUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	var form UserForm
-	fmt.Println("#############", students)
 
 
 	if err := students.Validate(); err != nil {

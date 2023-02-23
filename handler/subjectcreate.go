@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -30,18 +29,15 @@ func (c *connection) StoreSubject(w http.ResponseWriter, r *http.Request) {
 
 	// form := UserForm{}
 	subjects := storage.Subject{}
-	fmt.Println("**********************", subjects)
 
 	if err := c.decoder.Decode(&subjects, r.PostForm); err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("**********************", subjects)
 
 	_, err := c.storage.CreateSubject(subjects)
 	if err != nil {
 		log.Println(err)
-		fmt.Println("-------------", err)
 	}
 
 	http.Redirect(w, r, "/subject/list", http.StatusSeeOther)

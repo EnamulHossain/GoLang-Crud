@@ -2,7 +2,6 @@ package handler
 
 import (
 	"StudentManagement/storage"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -34,7 +33,6 @@ func (c *connection) StoreClass(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("************",classes)
 
 	form.Class = classes
 	if err := classes.Validate(); err != nil {

@@ -55,7 +55,9 @@ type dbStorage interface {
 	Markcreate(s storage.StudentSubject) (*storage.StudentSubject, error)
 
 
-	Resul() ([]storage.Result, error)
+	Resul(id int) ([]storage.Result, error)
+
+	AllResult() ([]storage.Result, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -102,7 +104,7 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
 			
 			r.Get("/result/{id:[0-9]+}", c.Result)
-			r.Get("/result", c.Result)
+			r.Get("/result", c.AllResult)
 
 		})
 

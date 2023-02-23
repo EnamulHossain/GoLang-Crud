@@ -24,9 +24,7 @@ func (c connection) MarkInput(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 		
 	}
-	fmt.Println("#######################################")
 	fmt.Printf("%+v", form)
-	fmt.Println("#######################################")
 	alldata,_:= c.storage.GetMarkInputOptionByID(form.Student)
 	// c.pareseMarkinputTemplate(w, alldata)
 
@@ -40,7 +38,6 @@ func (c connection) MarkInput(w http.ResponseWriter, r *http.Request) {
 
 
 func (c connection) StoreMark(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("@@@@@@@@@@@@@@@@@@@@@@@@")
 	if err := r.ParseForm(); err != nil {
 		log.Fatalln(err)
 	}
@@ -52,7 +49,6 @@ func (c connection) StoreMark(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln(err)
 	}
 	
-	fmt.Println("show mark map",marks.Mark)	
 
         
 		for id, mark := range marks.Mark {
