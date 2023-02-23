@@ -1,63 +1,27 @@
 {{template "header.html"}}
 
 
-<div class="overflow-x-auto">
+<div class="justify-center">
     <div
         class="min-w-screen min-h-screen bg-gray-100 flex items-center justify-center bg-gray-100 font-sans overflow-hidden">
-        <div class="w-full lg:w-5/6">
-            <div class="bg-white shadow-md rounded my-6">
-                <table class="min-w-max w-4 table-auto">
-
+        <div class="">
+            <h1 class="justify-center">Result</h1>
+            <div class="bg-white shadow-md rounded">
+                <table class=" table-auto ">
                     <thead>
                         <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                            <th class="py-3 px-6 text-left">First Name</th>
-                            <th class="py-3 px-6 text-left">Last Name</th>
-                            <th class="py-3 px-6 text-left">Roll</th>
-                            <th class="py-3 px-6 text-left">Class</th>
-
+                            <th class="py-3 px-6 text-left">{{ .SelectedSubMark.FirstName }} {{ .SelectedSubMark.LastName }}</th>
+                            <th class="py-3 px-6 text-left">Roll {{ .SelectedSubMark.Roll }}</th>
+                            <th class="py-3 px-6 text-left">Class {{ .SelectedSubMark.Class }}</th>
                         </tr>
-
                     </thead>
-                    <tbody class="text-gray-600 text-sm font-light">
-
-                        <tr class="border-b border-gray-200 hover:bg-gray-100">
-                            <td class="py-3 px-6 text-left">
-                                <div class="flex items-center">
-                                    <span>{{ .SelectedSubMark.FirstName }}</span>
-                                </div>
-                            </td>
-
-                            <td class="py-3 px-6 text-left">
-                                <div class="flex items-center">
-                                    <span>{{ .SelectedSubMark.LastName }}</span>
-                                </div>
-                            </td>
-
-
-                            <td class="py-3 px-6 text-left">
-                                <div class="flex items-center">
-                                    <span>{{ .SelectedSubMark.Roll }}</span>
-                                </div>
-                            </td>
-
-                            <td class="py-3 px-6 text-left">
-                                <div class="flex items-center">
-                                    <span>{{ .SelectedSubMark.Class }}</span>
-                                </div>
-                            </td>
-
-                        </tr>
-
-
-                    </tbody>
-
-                    
                 </table>
 
-                <table class="table-auto">
+                <br>
+
+                <table class="">
                     <div class="">
                         <thead>
-
                             <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                                 <th class="py-3 px-6 text-left">Subject</th>
                                 <th class="py-3 px-6 text-left">Mark</th>
@@ -65,7 +29,6 @@
 
                         </thead>
                         <tbody class="text-gray-600 text-sm font-light">
-
                             {{ range .Selectedstudentsub}}
                             <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                                 <td class="py-3 px-6 text-left">
@@ -78,7 +41,6 @@
                                         <span>{{ .Marks }}</span>
                                     </div>
                                 </td>
-
                             </tr>
                             {{end}}
                         </tbody>

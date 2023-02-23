@@ -28,12 +28,6 @@ func NewPostgresStorage (config *viper.Viper) (*PostgresStorage,error) {
 
 func ConnectDatabase(config *viper.Viper) (*sqlx.DB,error) {
 
-	// Start Database Connection
-	// db, err := sqlx.Connect("postgres", "user=postgres password=secret dbname=studentmanagement sslmode=disable")
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-
 	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		config.GetString("database.host"),
 		config.GetString("database.port"),

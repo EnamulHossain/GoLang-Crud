@@ -19,55 +19,6 @@ import (
 
 var sessionManager *scs.SessionManager
 
-// var migration = `
-//     CREATE TABLE IF NOT EXISTS users (
-// 		id SERIAL PRIMARY KEY,
-// 		name VARCHAR(255) NOT NULL,
-// 		email VARCHAR(255) UNIQUE NOT NULL,
-// 		password VARCHAR(255) NOT NULL,
-// 		status BOOLEAN DEFAULT TRUE,
-// 		created_at TIMESTAMP DEFAULT NOW(),
-// 		updated_at TIMESTAMP DEFAULT NOW(),
-// 		deleted_at TIMESTAMP DEFAULT NULL
-// 	);
-
-
-// 	CREATE TABLE IF NOT EXISTS students (
-// 		id SERIAL PRIMARY KEY,
-// 		first_name VARCHAR(255) NOT NULL,
-// 		last_name VARCHAR(255) NOT NULL,
-// 		class VARCHAR(255) NOT NULL,
-// 		roll INT NOT NULL,
-// 		email VARCHAR(255) UNIQUE NOT NULL,
-// 		password VARCHAR(255) NOT NULL,
-// 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-// 		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-// 		deleted_at TIMESTAMP DEFAULT NULL
-
-// 	  );
-	
-// 	CREATE TABLE IF NOT EXISTS marks (
-// 		id SERIAL PRIMARY KEY,
-// 		student_id INT REFERENCES students(id) ON DELETE CASCADE,
-// 		datastructures INT NOT NULL,
-// 		algorithms INT NOT NULL,
-// 		computernetworks INT NOT NULL,
-// 		artificialintelligence INT NOT NULL,
-// 		operatingsystems INT NOT NULL,
-// 		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-// 		updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-// 		deleted_at TIMESTAMP DEFAULT NULL
-// 	  );
-	  
-// 	CREATE TABLE IF NOT EXISTS sessions (
-// 		token TEXT PRIMARY KEY,
-// 		data BYTEA NOT NULL,
-// 		expiry TIMESTAMPTZ NOT NULL
-// 		);	
-
-// 	CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions (expiry);
-// `
-
 func main() {
 
 	// Start Enviroment
@@ -101,6 +52,8 @@ func main() {
     }
 
 	// End Database Connection
+
+
 	// Start  Sesson
 	lt := config.GetDuration("session.lifetime")
 	it := config.GetDuration("session.idletime")
@@ -111,7 +64,6 @@ func main() {
 	sessionManager.Cookie.HttpOnly = true
 	sessionManager.Cookie.Secure = true
 	sessionManager.Store = NewSQLXStore(postgresStorage.DB)
-
 	// End Sesson
 
 	p := config.GetInt("server.port")
