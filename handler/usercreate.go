@@ -27,6 +27,7 @@ type UserForm struct {
 	StudentSubject []storage.StudentSubject
 	MarkInput      []storage.MarkInputStore
 	Sts            []storage.Sts
+	Result         []storage.Result
 	FormError      map[string]error
 	CSRFToken      string
 }

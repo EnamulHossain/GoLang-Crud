@@ -53,6 +53,9 @@ type dbStorage interface {
 
 	GetMarkInputOptionByID(id string) ([]storage.MarkInputStore, error)
 	Markcreate(s storage.StudentSubject) (*storage.StudentSubject, error)
+
+
+	Resul() ([]storage.Result, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -97,6 +100,10 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			r.Get("/delete/{{.ID}}", c.DeleteStudent)
 			r.Get("/{id:[0-9]+}/edit", c.StudentEdit)
 			r.Post("/{id:[0-9]+}/update", c.StudentUpdate)
+			
+			r.Get("/result/{id:[0-9]+}", c.Result)
+			r.Get("/result", c.Result)
+
 		})
 
 		// SUBJECT

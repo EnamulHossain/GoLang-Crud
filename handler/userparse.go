@@ -175,3 +175,19 @@ func (c connection) pareseMarkinputTemplate(w http.ResponseWriter, data any) {
 		log.Fatal(err)
 	}
 }
+
+
+
+// Result
+
+
+func (c connection) pareseResultTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("result.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}
+

@@ -140,10 +140,10 @@ func (s Subject) Validate() error {
 }
 
 type StudentSubject struct {
-	ID        int          `db:"id" form:"-"`
-	StudentID int          `db:"student_id" form:"student_id"`
-	SubjectID int          `db:"subject_id" form:"subject_id"`
-	Marks     int          `db:"marks"`
+	ID        int `db:"id" form:"-"`
+	StudentID int `db:"student_id" form:"student_id"`
+	SubjectID int `db:"subject_id" form:"subject_id"`
+	Marks     int `db:"marks"`
 	Mark      map[int]int
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
@@ -163,8 +163,16 @@ type MarkInputStore struct {
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
 }
 
+type Sts struct {
+	Mark map[int]int
+}
 
-type Sts struct{
-	Mark      map[int]int
-	
+type Result struct {
+	ID        int            `db:"id" form:"id"`
+	FirstName sql.NullString `db:"first_name" form:"first_name"`
+	LastName  sql.NullString `db:"last_name" form:"last_name"`
+	Class     sql.NullInt64  `db:"class" form:"class"`
+	Roll      sql.NullInt64  `db:"roll" form:"roll"`
+	Subject1  sql.NullString `db:"subject1" form:"subject1"`
+	Marks     sql.NullInt64  `db:"marks"`
 }
