@@ -143,20 +143,28 @@ type StudentSubject struct {
 	ID        int          `db:"id" form:"-"`
 	StudentID int          `db:"student_id" form:"student_id"`
 	SubjectID int          `db:"subject_id" form:"subject_id"`
-	Marks     int          `db:"marks" form:"marks"`
+	Marks     int          `db:"marks"`
+	Mark      map[int]int
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
 }
 
 type MarkInputStore struct {
-	// ID        int               `db:"id" form:"-"`
-	FirstName string            `db:"first_name" form:"first_name"`
-	LastName  string            `db:"last_name" form:"last_name"`
-	Class     int               `db:"class" form:"class"`
-	Roll      int               `db:"roll" form:"roll"`
-	Subject1  string `db:"subject1" form:"subject1"`
+	ID        int          `db:"id" form:"id"`
+	FirstName string       `db:"first_name" form:"first_name"`
+	LastName  string       `db:"last_name" form:"last_name"`
+	Class     int          `db:"class" form:"class"`
+	Roll      int          `db:"roll" form:"roll"`
+	SubjectID int          `db:"subject_id" form:"subject_id"`
+	Subject1  string       `db:"subject1" form:"subject1"`
 	CreatedAt time.Time    `db:"created_at" form:"created_at"`
 	UpdatedAt time.Time    `db:"updated_at" form:"updated_at"`
 	DeletedAt sql.NullTime `db:"deleted_at" form:"deleted_at"`
+}
+
+
+type Sts struct{
+	Mark      map[int]int
+	
 }

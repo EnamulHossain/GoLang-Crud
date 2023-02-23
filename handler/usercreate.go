@@ -11,11 +11,10 @@ import (
 )
 
 type MarkForm struct {
-	Class           string
-	Student         string
-	CSRFToken      string
+	Class     string
+	Student   string
+	CSRFToken string
 }
-
 
 type UserForm struct {
 	User           storage.User
@@ -27,6 +26,7 @@ type UserForm struct {
 	ClassList      []storage.Class
 	StudentSubject []storage.StudentSubject
 	MarkInput      []storage.MarkInputStore
+	Sts            []storage.Sts
 	FormError      map[string]error
 	CSRFToken      string
 }
