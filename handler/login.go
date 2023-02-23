@@ -96,5 +96,5 @@ func (c connection) LoginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 
 	c.sessionManager.Put(r.Context(), "userName", (user.Name))
-	http.Redirect(w, r, "/user/list", http.StatusSeeOther)
+	http.Redirect(w, r, "/student/list", http.StatusSeeOther)
 }

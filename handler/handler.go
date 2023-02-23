@@ -57,7 +57,7 @@ type dbStorage interface {
 
 	Resul(id int) ([]storage.Result, error)
 
-	AllResult() ([]storage.Result, error)
+	AllResult() ([]storage.AllResult, error)
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -105,6 +105,7 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			
 			r.Get("/result/{id:[0-9]+}", c.Result)
 			r.Get("/result", c.AllResult)
+
 
 		})
 

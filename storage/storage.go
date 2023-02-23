@@ -168,7 +168,17 @@ type Sts struct {
 }
 
 type Result struct {
-	ID        int            `db:"id" form:"id"`
+	ID        int    `db:"id" form:"id"`
+	FirstName string `db:"first_name,omitempty" form:"first_name"`
+	LastName  string `db:"last_name,omitempty" form:"last_name"`
+	Class     int    `db:"class,omitempty" form:"class"`
+	Roll      int    `db:"roll,omitempty" form:"roll"`
+	Subject1  string `db:"subject1,omitempty" form:"subject1"`
+	Marks     int    `db:"marks,omitempty"`
+}
+
+type AllResult struct {
+	ID        sql.NullInt64  `db:"id" form:"id"`
 	FirstName sql.NullString `db:"first_name" form:"first_name"`
 	LastName  sql.NullString `db:"last_name" form:"last_name"`
 	Class     sql.NullInt64  `db:"class" form:"class"`

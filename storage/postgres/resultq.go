@@ -27,8 +27,8 @@ FROM subjects
 FULL OUTER JOIN student_subjects ON subjects.id = student_subjects.subject_id
 FULL OUTER JOIN students ON students.id = student_subjects.student_id;`
 
-func (s PostgresStorage) AllResult() ([]storage.Result, error) {
-	var resultt []storage.Result
+func (s PostgresStorage) AllResult() ([]storage.AllResult, error) {
+	var resultt []storage.AllResult
 	if err := s.DB.Select(&resultt, allres); err != nil {
 		log.Fatal(err)
 		return nil, err
