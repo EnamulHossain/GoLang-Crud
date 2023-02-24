@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-const res = `SELECT students.first_name, students.last_name, subjects.class, students.roll, subjects.subject1,student_subjects.marks
+const res = `SELECT students.first_name, students.last_name, subjects.class, students.roll, subjects.subject1,student_subjects.marks,student_subjects.id
 FROM subjects
 FULL OUTER JOIN student_subjects ON subjects.id = student_subjects.subject_id
 FULL OUTER JOIN students ON students.id = student_subjects.student_id

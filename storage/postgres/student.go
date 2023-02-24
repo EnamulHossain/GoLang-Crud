@@ -79,6 +79,15 @@ func (s PostgresStorage) UpdateStudent(u storage.Student) (*storage.Student, err
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	// HAsh
+	HassPass, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	u.Password = string(HassPass)
+	//ENd HAsh
+
 	res, err := stmt.Exec(u)
 	if err != nil {
 		log.Fatalln(err)

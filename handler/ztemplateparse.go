@@ -202,3 +202,17 @@ func (c connection) pareseAllResultTemplate(w http.ResponseWriter, data any) {
 		log.Fatal(err)
 	}
 }
+
+
+
+
+
+func (c connection) PareseMarkeditTemplate(w http.ResponseWriter, data any) {
+	t := c.Templates.Lookup("markedit.html")
+	if t == nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+	if err := t.Execute(w, data); err != nil {
+		log.Fatal(err)
+	}
+}

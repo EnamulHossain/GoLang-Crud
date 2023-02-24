@@ -53,11 +53,14 @@ type dbStorage interface {
 
 	GetMarkInputOptionByID(id string) ([]storage.MarkInputStore, error)
 	Markcreate(s storage.StudentSubject) (*storage.StudentSubject, error)
+	MarkEdit(id string) (*storage.MarkEdit, error)
 
 
 	Resul(id int) ([]storage.Result, error)
 
 	AllResult() ([]storage.AllResult, error)
+
+	UpdateMarksbyID(marks string,id string) error
 }
 
 func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (connection, *chi.Mux) {
@@ -105,6 +108,10 @@ func New(storage dbStorage, sm *scs.SessionManager, decoder *form.Decoder) (conn
 			
 			r.Get("/result/{id:[0-9]+}", c.Result)
 			r.Get("/result", c.AllResult)
+
+			r.Get("/{id:[0-9]+}/edits", c.EditMark)
+			r.Post("/mark/update/{id:[0-9]+}", c.UpdateMark)
+
 
 
 		})

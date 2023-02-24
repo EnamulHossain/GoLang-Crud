@@ -29,9 +29,7 @@ type Student struct {
 
 func (s Student) Validate() error {
 	vre := validation.Required.Error
-	// rollRule := validation.Match(
-	// 	regexp.MustCompile(`^[^-][0-9]+$`)).
-	// 	Error("Roll number must be a positive integer")
+	
 	len := validation.Length(2, 20).Error
 	return validation.ValidateStruct(&s,
 		validation.Field(&s.FirstName,
@@ -43,7 +41,8 @@ func (s Student) Validate() error {
 			len("The LastName field must be between 2 to 20 characters."),
 		),
 		validation.Field(&s.Class, vre("The Class  is required")),
-		validation.Field(&s.Roll, vre("The Roll  is required")),
+		validation.Field(&s.Roll, vre("The Roll  is required"),
+		validation.Required, validation.Min(1), validation.Max(100).Error(" Roll must Positive  (1 to 100) "),),
 		validation.Field(&s.Email, vre("The Email  is required")),
 		validation.Field(&s.Password, vre("The Password  is required")),
 	)
@@ -185,4 +184,10 @@ type AllResult struct {
 	Roll      sql.NullInt64  `db:"roll" form:"roll"`
 	Subject1  sql.NullString `db:"subject1" form:"subject1"`
 	Marks     sql.NullInt64  `db:"marks"`
+}
+
+
+type MarkEdit struct {
+	ID        int    `form:"ID" db:"id"`
+	Marks     string `form:"Marks" db:"marks"`
 }

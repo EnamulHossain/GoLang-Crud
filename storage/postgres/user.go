@@ -59,7 +59,7 @@ func (s PostgresStorage) CreateUser(u storage.User) (*storage.User, error) {
 }
 
 const UpdateQQ = `
-UPDATE Users SET
+UPDATE users SET
 	first_name =:first_name,
 	last_name =:last_name,
 	name =:name,
